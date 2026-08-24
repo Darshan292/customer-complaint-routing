@@ -1,0 +1,1251 @@
+
+/* ============================================================
+   PREMIUM UX LAYER
+   Designed around readability, hierarchy, affordance, feedback,
+   chunking, progressive disclosure and subtle motion.
+   ============================================================ */
+
+:root {
+  --ink: #15213a;
+  --ink-2: #33425e;
+  --muted: #6f7e97;
+  --muted-2: #8c99ad;
+  --line: #dbe3ef;
+  --panel: rgba(255,255,255,.94);
+  --panel-solid: #ffffff;
+  --canvas: #f3f6fb;
+  --accent: #4169e1;
+  --accent-2: #7357ff;
+  --success: #1e9a68;
+  --warning: #d18a1b;
+  --danger: #c94747;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --shadow-sm: 0 8px 24px rgba(26, 46, 81, .07);
+  --shadow-md: 0 18px 48px rgba(26, 46, 81, .10);
+  --shadow-lg: 0 30px 85px rgba(16, 29, 52, .16);
+}
+
+/* ----- readable global type ----- */
+body {
+  font-size: 15px;
+  line-height: 1.5;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(65,105,225,.06), transparent 26%),
+    radial-gradient(circle at 94% 4%, rgba(115,87,255,.055), transparent 24%),
+    #f3f6fb;
+}
+
+button,
+input,
+textarea,
+select {
+  font-size: 14px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9aa6b8;
+  opacity: 1;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(65,105,225,.13);
+}
+
+/* ----- premium dashboard canvas ----- */
+.admin-shell,
+.agent-page,
+.customer-enterprise {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.admin-shell::before,
+.agent-page::before,
+.customer-enterprise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 82% 7%, rgba(115,87,255,.10), transparent 20%),
+    radial-gradient(circle at 18% 12%, rgba(65,105,225,.08), transparent 24%);
+}
+
+.admin-shell::after,
+.agent-page::after,
+.customer-enterprise::after {
+  content: "";
+  position: absolute;
+  width: 440px;
+  height: 440px;
+  right: -230px;
+  top: 90px;
+  z-index: -1;
+  border-radius: 50%;
+  border: 1px solid rgba(82,110,167,.08);
+  box-shadow:
+    0 0 0 55px rgba(82,110,167,.025),
+    0 0 0 110px rgba(82,110,167,.018);
+  pointer-events: none;
+}
+
+/* ----- role accents ----- */
+.admin-shell { --accent: #6e5df8; --accent-2: #2f7ee8; }
+.agent-page { --accent: #159b73; --accent-2: #3477e8; }
+.customer-enterprise { --accent: #3578f6; --accent-2: #7357ff; }
+
+/* ----- top-level headers ----- */
+.admin-topbar,
+.agent-topbar,
+.customer-topbar {
+  position: relative;
+}
+
+.admin-topbar h1,
+.agent-topbar h1,
+.customer-topbar h1 {
+  font-weight: 800;
+  color: #121d33;
+}
+
+.admin-topbar p,
+.agent-topbar p,
+.customer-topbar p {
+  font-size: 15px !important;
+  line-height: 1.55;
+}
+
+/* ----- top action buttons ----- */
+.top-btn,
+.add-btn,
+.agent-refresh,
+.customer-refresh {
+  position: relative;
+  min-height: 46px !important;
+  height: 46px !important;
+  padding: 0 16px !important;
+  border-radius: 13px !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  letter-spacing: -.01em;
+  border: 1px solid rgba(125,143,176,.28) !important;
+  background: rgba(255,255,255,.88) !important;
+  color: #42516a !important;
+  box-shadow: 0 7px 20px rgba(32,49,82,.05);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.top-btn:hover,
+.add-btn:hover,
+.agent-refresh:hover,
+.customer-refresh:hover {
+  transform: translateY(-2px);
+  border-color: rgba(65,105,225,.34) !important;
+  box-shadow: 0 12px 26px rgba(32,49,82,.10);
+}
+
+.top-btn.primary,
+.add-btn,
+.submit-request,
+.td-primary {
+  position: relative;
+  overflow: hidden;
+  color: #fff !important;
+  border-color: transparent !important;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent)) !important;
+  box-shadow: 0 12px 26px rgba(62,88,197,.22);
+}
+
+.top-btn.primary::after,
+.add-btn::after,
+.submit-request::after,
+.td-primary::after,
+.queue-tools button.active::after,
+.customer-list-tools button.active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 55%;
+  height: 100%;
+  transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.24), transparent);
+  transition: left .65s ease;
+  pointer-events: none;
+}
+
+.top-btn.primary:hover::after,
+.add-btn:hover::after,
+.submit-request:hover::after,
+.td-primary:hover::after,
+.queue-tools button.active:hover::after,
+.customer-list-tools button.active:hover::after {
+  left: 125%;
+}
+
+.top-btn.primary:hover,
+.add-btn:hover,
+.submit-request:hover,
+.td-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(62,88,197,.29);
+}
+
+/* ----- cards: depth + hover affordance ----- */
+.hero-metric,
+.command-card,
+.surface,
+.agent-identity-card,
+.agent-capacity-card,
+.agent-workforce-card,
+.agent-metric,
+.agent-queue-section,
+.customer-intake-card,
+.customer-command-card,
+.customer-requests,
+.customer-ticket-card {
+  border-color: rgba(185,198,220,.60) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: transform .20s ease, box-shadow .20s ease, border-color .20s ease;
+}
+
+.hero-metric:hover,
+.command-card:hover,
+.agent-metric:hover,
+.customer-stat-grid div:hover,
+.customer-ticket-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md) !important;
+  border-color: rgba(101,128,188,.36) !important;
+}
+
+/* ----- labels: readable but still secondary ----- */
+.admin-eyebrow,
+.section-kicker,
+.card-kicker,
+.eyebrow,
+.intake-kicker {
+  font-size: 12px !important;
+  letter-spacing: .11em !important;
+}
+
+/* ----- metric cards ----- */
+.hero-metric {
+  min-height: 154px !important;
+  padding: 22px !important;
+  border-radius: 19px !important;
+}
+
+.hero-metric span,
+.hero-metric small {
+  font-size: 13px !important;
+}
+
+.hero-metric strong {
+  font-size: 35px !important;
+}
+
+.metric-icon,
+.command-card .command-icon {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 14px !important;
+  font-size: 21px !important;
+}
+
+/* ----- command cards ----- */
+.command-card {
+  min-height: 132px !important;
+  padding: 21px !important;
+  border-radius: 18px !important;
+}
+
+.command-card span {
+  font-size: 12px !important;
+}
+
+.command-card strong {
+  font-size: 18px !important;
+}
+
+.command-card p {
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+}
+
+.command-card button {
+  height: 42px !important;
+  padding: 0 13px !important;
+  border-radius: 11px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+/* ----- surfaces ----- */
+.surface,
+.agent-queue-section,
+.customer-requests {
+  padding: 24px !important;
+  border-radius: 20px !important;
+}
+
+.surface-heading h2,
+.queue-header h2,
+.customer-list-header h2 {
+  font-size: 23px !important;
+}
+
+.surface-heading p,
+.queue-header p,
+.customer-list-header p {
+  font-size: 13px !important;
+  line-height: 1.5;
+}
+
+/* ----- admin queue/search controls ----- */
+.search-box,
+.queue-toolbar select,
+.queue-tools input,
+.queue-tools button,
+.customer-search,
+.customer-list-tools > button {
+  height: 46px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+}
+
+.search-box {
+  width: 270px !important;
+  padding: 0 13px !important;
+}
+
+.search-box input,
+.customer-search input,
+.queue-tools input {
+  font-size: 14px !important;
+}
+
+.queue-toolbar select {
+  padding: 0 13px !important;
+  color: #3f506d !important;
+}
+
+.queue-tools button,
+.customer-list-tools > button {
+  padding: 0 14px !important;
+  font-weight: 800 !important;
+}
+
+.queue-tools button.active,
+.customer-list-tools > button.active {
+  position: relative;
+  overflow: hidden;
+  border-color: transparent !important;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent)) !important;
+  box-shadow: 0 10px 22px rgba(66,94,191,.18);
+}
+
+/* ----- people / resolver cards ----- */
+.resolver-card {
+  padding: 17px !important;
+  border-radius: 16px !important;
+}
+
+.person strong {
+  font-size: 14px !important;
+}
+
+.person span {
+  font-size: 12px !important;
+}
+
+.availability {
+  font-size: 11px !important;
+}
+
+.resolver-stats span {
+  font-size: 10px !important;
+}
+
+.resolver-stats strong {
+  font-size: 15px !important;
+}
+
+.resolver-tags span {
+  font-size: 10px !important;
+}
+
+.status-chips button {
+  min-height: 38px !important;
+  padding: 7px 10px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+}
+
+/* ----- queue rows ----- */
+.queue-header {
+  font-size: 10px !important;
+}
+
+.ticket-number {
+  font-size: 13px !important;
+}
+
+.ticket-number small {
+  font-size: 11px !important;
+}
+
+.ticket-summary strong {
+  font-size: 14px !important;
+}
+
+.ticket-summary span,
+.ownership span,
+.sla-pill,
+.priority-badge {
+  font-size: 12px !important;
+}
+
+.queue-item {
+  padding: 17px 13px !important;
+}
+
+/* ----- agent ----- */
+.agent-refresh {
+  min-width: 118px;
+  justify-content: center;
+}
+
+.agent-profile-card {
+  min-height: 48px;
+  padding: 6px 13px 6px 7px !important;
+  border-radius: 14px !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.agent-profile-card strong {
+  font-size: 14px !important;
+}
+
+.agent-profile-card span {
+  font-size: 12px !important;
+}
+
+.agent-identity-card {
+  padding: 25px !important;
+}
+
+.agent-identity-head h2 {
+  font-size: 24px !important;
+}
+
+.agent-identity-head p,
+.team-label {
+  font-size: 13px !important;
+}
+
+.agent-status-row,
+.status-pill,
+.capacity-foot {
+  font-size: 12px !important;
+}
+
+.status-pill {
+  padding: 8px 11px !important;
+  border-radius: 10px !important;
+}
+
+.capacity-big strong {
+  font-size: 46px !important;
+}
+
+.capacity-big span {
+  font-size: 15px !important;
+}
+
+.workforce-stats span {
+  font-size: 12px !important;
+}
+
+.workforce-stats strong {
+  font-size: 17px !important;
+}
+
+.skills-line {
+  font-size: 13px !important;
+}
+
+.agent-metric {
+  min-height: 132px !important;
+  padding: 19px !important;
+  border-radius: 18px !important;
+}
+
+.agent-metric span {
+  font-size: 12px !important;
+}
+
+.agent-metric strong {
+  font-size: 25px !important;
+}
+
+.agent-ticket-card {
+  min-height: 116px !important;
+  border-radius: 15px !important;
+}
+
+.ticket-number {
+  font-size: 12px !important;
+}
+
+.priority-pill,
+.status-text,
+.risk-label {
+  font-size: 11px !important;
+}
+
+.ticket-main-block h3 {
+  font-size: 20px !important;
+}
+
+.ticket-main-block p {
+  font-size: 13px !important;
+}
+
+.ticket-sla-block span {
+  font-size: 12px !important;
+}
+
+.ticket-sla-block strong {
+  font-size: 17px !important;
+}
+
+.ticket-action-block button {
+  height: 42px !important;
+  border-radius: 11px !important;
+  padding: 0 14px !important;
+  font-size: 13px !important;
+}
+
+/* ----- customer ----- */
+.customer-logo {
+  width: 58px !important;
+  height: 58px !important;
+  border-radius: 17px !important;
+  font-size: 25px !important;
+  background: linear-gradient(135deg, #2e72f3, #7357ff) !important;
+  box-shadow: 0 14px 28px rgba(60,94,196,.22) !important;
+}
+
+.customer-profile {
+  min-height: 48px;
+  padding-right: 13px !important;
+  border-radius: 14px !important;
+  box-shadow: var(--shadow-sm);
+  font-size: 13px !important;
+}
+
+.customer-profile div {
+  width: 35px !important;
+  height: 35px !important;
+  border-radius: 11px !important;
+  font-size: 11px !important;
+}
+
+.customer-intake-card {
+  padding: 30px !important;
+  border-radius: 22px !important;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(65,105,225,.08), transparent 35%),
+    #fff !important;
+}
+
+.customer-intake-card h2 {
+  font-size: 30px !important;
+}
+
+.customer-intake-card > p {
+  font-size: 14px !important;
+}
+
+.customer-intake-card textarea {
+  min-height: 180px !important;
+  padding: 17px !important;
+  border-radius: 14px !important;
+  font-size: 14px !important;
+}
+
+.customer-intake-bottom label {
+  font-size: 11px !important;
+}
+
+.customer-intake-bottom select {
+  height: 48px !important;
+  padding: 0 13px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+}
+
+.submit-request {
+  min-height: 48px !important;
+  height: 48px !important;
+  padding: 0 19px !important;
+  border-radius: 13px !important;
+  font-size: 14px !important;
+}
+
+.ai-intake-note {
+  padding: 13px 14px !important;
+  border-radius: 12px !important;
+  font-size: 12px !important;
+}
+
+.customer-command-card {
+  padding: 25px !important;
+  border-radius: 20px !important;
+}
+
+.customer-stat-grid div {
+  min-height: 112px !important;
+  padding: 17px !important;
+  border-radius: 14px !important;
+}
+
+.customer-stat-grid span {
+  font-size: 12px !important;
+}
+
+.customer-stat-grid strong {
+  font-size: 31px !important;
+}
+
+.customer-health-line div {
+  padding: 12px 10px !important;
+  font-size: 12px !important;
+}
+
+.customer-requests {
+  margin-top: 22px !important;
+}
+
+.customer-search {
+  width: 245px !important;
+  padding: 0 12px !important;
+}
+
+.customer-ticket-card {
+  padding: 21px !important;
+  border-radius: 16px !important;
+}
+
+.customer-ticket-head {
+  font-size: 12px !important;
+}
+
+.customer-priority {
+  padding: 6px 9px !important;
+  font-size: 11px !important;
+  border-radius: 8px !important;
+}
+
+.customer-ticket-card h3 {
+  font-size: 17px !important;
+  margin-top: 14px !important;
+}
+
+.customer-ticket-card > p {
+  font-size: 12px !important;
+}
+
+.customer-ticket-owner div {
+  padding: 11px !important;
+  border-radius: 10px !important;
+}
+
+.customer-ticket-owner span {
+  font-size: 10px !important;
+}
+
+.customer-ticket-owner strong {
+  font-size: 12px !important;
+}
+
+.customer-ticket-footer > span {
+  font-size: 11px !important;
+}
+
+.customer-ticket-footer button {
+  height: 40px !important;
+  padding: 0 13px !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
+/* ----- shared select styling ----- */
+select,
+.td-manual-grid select,
+.td-control-grid select {
+  min-height: 46px;
+  border-radius: 12px !important;
+  border: 1px solid #d6e0ed !important;
+  background: #fff !important;
+  color: #3e4e69 !important;
+  font-size: 14px !important;
+  font-weight: 600;
+  padding: 0 13px !important;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+select:hover,
+.td-manual-grid select:hover,
+.td-control-grid select:hover {
+  border-color: #aabbd7 !important;
+}
+
+select:focus,
+.td-manual-grid select:focus,
+.td-control-grid select:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 4px rgba(65,105,225,.11) !important;
+}
+
+/* ----- ticket modal: bigger, more tactile, more premium ----- */
+.td-backdrop {
+  background: rgba(8, 16, 31, .60) !important;
+  backdrop-filter: blur(12px) saturate(120%) !important;
+}
+
+.td-drawer {
+  width: min(1120px, 97vw) !important;
+  background:
+    radial-gradient(circle at 90% 7%, rgba(93,113,210,.08), transparent 23%),
+    #f4f7fb !important;
+  border-left: 1px solid rgba(255,255,255,.65);
+  box-shadow: -35px 0 90px rgba(6,17,35,.25) !important;
+  animation: drawerReveal .26s cubic-bezier(.22,.8,.24,1);
+}
+
+@keyframes drawerReveal {
+  from { transform: translateX(32px); opacity: .85; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.td-header {
+  padding: 30px 34px 26px !important;
+  background:
+    radial-gradient(circle at 88% 0%, rgba(115,87,255,.30), transparent 28%),
+    linear-gradient(135deg, #0d1830 0%, #172949 58%, #243e71 100%) !important;
+}
+
+.td-eyebrow {
+  font-size: 12px !important;
+  color: #b8c6df !important;
+}
+
+.td-header h2 {
+  font-size: 30px !important;
+  line-height: 1.22 !important;
+  margin: 9px 0 14px !important;
+  letter-spacing: -.025em;
+}
+
+.td-icon-button {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 14px !important;
+  font-size: 23px !important;
+  transition: transform .16s ease, background .16s ease;
+}
+
+.td-icon-button:hover {
+  transform: rotate(5deg) scale(1.04);
+  background: rgba(255,255,255,.14) !important;
+}
+
+.td-body {
+  padding: 24px 30px 60px !important;
+  gap: 18px !important;
+}
+
+.td-card {
+  padding: 23px !important;
+  border-radius: 18px !important;
+  border-color: rgba(186,200,221,.66) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.td-card-label {
+  font-size: 12px !important;
+  color: #697991 !important;
+}
+
+.td-card h3 {
+  font-size: 20px !important;
+}
+
+.td-person strong {
+  font-size: 20px !important;
+}
+
+.td-person span {
+  font-size: 13px !important;
+}
+
+.td-person small {
+  font-size: 12px !important;
+}
+
+.td-info-grid span {
+  font-size: 12px !important;
+}
+
+.td-info-grid strong {
+  font-size: 14px !important;
+}
+
+.td-sla-state {
+  font-size: 13px !important;
+}
+
+.td-sla-time {
+  font-size: 48px !important;
+}
+
+.td-sla-label {
+  font-size: 13px !important;
+}
+
+.description-card p {
+  font-size: 15px !important;
+  line-height: 1.8 !important;
+}
+
+.td-routing-note {
+  font-size: 13px !important;
+  padding: 14px 15px !important;
+  border-radius: 12px !important;
+}
+
+.td-badge {
+  padding: 6px 10px !important;
+  font-size: 11px !important;
+}
+
+.td-action-row {
+  gap: 10px !important;
+  margin: 19px 0 !important;
+}
+
+.td-action-row button,
+.td-manual-grid button,
+.td-candidate button {
+  min-height: 44px !important;
+  padding: 0 15px !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+}
+
+.td-selected-agent {
+  padding: 17px !important;
+  border-radius: 15px !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+}
+
+.td-score strong {
+  font-size: 35px !important;
+}
+
+.td-score span {
+  font-size: 10px !important;
+}
+
+.td-candidate {
+  padding: 15px !important;
+  border-radius: 14px !important;
+}
+
+.td-candidate-main strong {
+  font-size: 14px !important;
+}
+
+.td-candidate-main span {
+  font-size: 12px !important;
+}
+
+.td-metric-top span {
+  font-size: 10px !important;
+}
+
+.td-metric-top strong {
+  font-size: 12px !important;
+}
+
+.td-meter {
+  height: 6px !important;
+}
+
+.td-empty strong {
+  font-size: 14px !important;
+}
+
+.td-empty span {
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+}
+
+.td-muted {
+  font-size: 12px !important;
+  line-height: 1.55;
+}
+
+/* ----- AI assistant: visual focus + chunked content ----- */
+.ai-resolution-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(86,112,191,.23) !important;
+  background:
+    radial-gradient(circle at 95% 0%, rgba(115,87,255,.14), transparent 27%),
+    radial-gradient(circle at 0% 100%, rgba(53,120,246,.09), transparent 26%),
+    #fff !important;
+}
+
+.ai-resolution-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #3578f6, #7357ff, #13a57c);
+}
+
+.ai-help-button {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 12px !important;
+  font-size: 18px;
+  background: rgba(255,255,255,.92) !important;
+  box-shadow: 0 7px 16px rgba(42,64,105,.08);
+}
+
+.ai-help-popover {
+  width: 330px !important;
+  padding: 17px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 22px 50px rgba(25,42,70,.18) !important;
+}
+
+.ai-help-popover strong {
+  font-size: 13px !important;
+}
+
+.ai-help-popover p {
+  font-size: 12px !important;
+}
+
+.ai-help-popover span {
+  font-size: 11px !important;
+  line-height: 1.55 !important;
+}
+
+.ai-disclaimer {
+  font-size: 12px !important;
+}
+
+.ai-empty-state {
+  grid-template-columns: 48px 1fr auto !important;
+  gap: 14px !important;
+  padding: 17px !important;
+  border: 1px solid #d7e2f4 !important;
+  border-radius: 15px !important;
+  background: linear-gradient(135deg, #fbfdff, #f5f8ff) !important;
+}
+
+.ai-empty-icon {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 14px !important;
+  font-size: 20px;
+}
+
+.ai-empty-state strong {
+  font-size: 14px !important;
+}
+
+.ai-empty-state span {
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+}
+
+.ai-confidence-row {
+  padding: 12px 0 !important;
+}
+
+.ai-confidence-row span,
+.ai-subheading {
+  font-size: 11px !important;
+}
+
+.ai-confidence-row strong {
+  font-size: 18px !important;
+}
+
+.ai-diagnosis {
+  margin-top: 14px !important;
+  padding: 16px !important;
+  border-radius: 13px !important;
+  background: linear-gradient(135deg,#edf4ff,#f3f0ff) !important;
+  border: 1px solid #dce6fb;
+}
+
+.ai-diagnosis span {
+  font-size: 11px !important;
+}
+
+.ai-diagnosis strong {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+.ai-two-column {
+  gap: 12px !important;
+  margin-top: 12px !important;
+}
+
+.ai-two-column > div,
+.ai-customer-response {
+  padding: 15px !important;
+  border-radius: 13px !important;
+}
+
+.ai-two-column p,
+.ai-customer-response p {
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+}
+
+.ai-step-section li {
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+}
+
+.similar-loading,
+.similar-ticket-id,
+.similar-ticket h4,
+.similar-ticket > p,
+.similar-ticket-meta span,
+.similar-ticket-outcome strong,
+.similar-ticket-outcome span {
+  font-size: 12px !important;
+}
+
+.similar-ticket {
+  padding: 15px !important;
+  border-radius: 14px !important;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.similar-ticket:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.similar-ticket h4 {
+  font-size: 15px !important;
+}
+
+.similar-ticket > p {
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+
+/* ----- owner block ----- */
+.ticket-owner-card {
+  border-color: rgba(186,200,221,.66) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--shadow-sm) !important;
+  padding: 20px 22px !important;
+}
+
+.owner-status {
+  padding: 7px 11px !important;
+  font-size: 11px !important;
+  border-radius: 999px !important;
+}
+
+.ticket-owner-info strong {
+  font-size: 17px !important;
+}
+
+.ticket-owner-info span {
+  font-size: 13px !important;
+}
+
+.ticket-owner-info small {
+  font-size: 11px !important;
+}
+
+.owner-unassigned-icon {
+  width: 46px !important;
+  height: 46px !important;
+  font-size: 20px !important;
+}
+
+/* ----- responsive ----- */
+@media (max-width: 900px) {
+  .admin-shell,
+  .agent-page,
+  .customer-enterprise {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .top-btn,
+  .add-btn,
+  .agent-refresh,
+  .customer-refresh {
+    min-height: 44px !important;
+    height: 44px !important;
+  }
+
+  .search-box,
+  .customer-search {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .td-drawer {
+    width: 100% !important;
+  }
+
+  .td-header {
+    padding: 22px !important;
+  }
+
+  .td-header h2 {
+    font-size: 25px !important;
+  }
+
+  .td-body {
+    padding: 18px !important;
+  }
+
+  .td-card {
+    padding: 19px !important;
+  }
+
+  .customer-intake-card h2 {
+    font-size: 25px !important;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+
+/* ----- login: same design language, stronger first impression ----- */
+.enterprise-login {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(65,105,225,.20), transparent 28%),
+    radial-gradient(circle at 82% 12%, rgba(115,87,255,.20), transparent 25%),
+    #09111f !important;
+}
+
+.login-shell {
+  border-radius: 28px !important;
+  border-color: rgba(119,145,197,.28) !important;
+  background:
+    radial-gradient(circle at 82% 80%, rgba(63,105,225,.10), transparent 30%),
+    linear-gradient(135deg, rgba(19,33,53,.98), rgba(9,19,33,.98)) !important;
+  box-shadow:
+    0 40px 110px rgba(0,0,0,.42),
+    inset 0 1px 0 rgba(255,255,255,.05) !important;
+}
+
+.brand-mark {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg,#3578f6,#7357ff) !important;
+  box-shadow: 0 12px 24px rgba(65,105,225,.28);
+}
+
+.brand strong {
+  font-size: 15px !important;
+}
+
+.brand span {
+  font-size: 12px !important;
+}
+
+.login-copy h1 {
+  font-size: clamp(46px, 5vw, 66px) !important;
+  line-height: 1.03 !important;
+}
+
+.login-copy p {
+  font-size: 18px !important;
+  line-height: 1.65 !important;
+  color: #a7b4c8 !important;
+}
+
+.login-form {
+  padding: 38px !important;
+  border-radius: 22px !important;
+  box-shadow: 0 28px 70px rgba(0,0,0,.24) !important;
+}
+
+.login-form label {
+  font-size: 13px !important;
+}
+
+.input-wrap {
+  height: 54px !important;
+  border-radius: 13px !important;
+  padding: 0 15px !important;
+  margin-bottom: 20px !important;
+}
+
+.input-wrap input {
+  font-size: 15px !important;
+}
+
+.login-form button {
+  height: 54px !important;
+  border-radius: 13px !important;
+  margin-top: 10px !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  background: linear-gradient(135deg,#3578f6,#7357ff) !important;
+  box-shadow: 0 14px 28px rgba(65,105,225,.24);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.login-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(65,105,225,.32);
+}
+
+.role-strip {
+  font-size: 12px !important;
+}
