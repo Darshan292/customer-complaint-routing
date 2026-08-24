@@ -5,6 +5,12 @@
    LOGIN — MEMORABLE FIRST IMPRESSION
    ============================================================ */
 
+.enterprise-login {
+  margin: 0;
+  padding: 30px;
+  min-height: 100vh;
+}
+
 .enterprise-login{
   position:relative;
   overflow:hidden;
