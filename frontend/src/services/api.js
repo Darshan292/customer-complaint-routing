@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://turbo-giggle-4pjj6wqjgj7cqwj5-8000.app.github.dev/",
+  baseURL: import.meta.env.VITE_API_URL || "https://customer-complaint-routing.onrender.com/",
 });
 
 API.interceptors.request.use((config) => {
