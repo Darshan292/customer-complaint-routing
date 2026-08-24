@@ -53,3 +53,15 @@ def login(
             None,
         ),
     }
+
+@router.post("/logout")
+def logout():
+    """
+    The current application uses stateless request headers rather than a
+    server-side session. Logout therefore invalidates the client session.
+    A future JWT/session layer can add server-side revocation here.
+    """
+    return {
+        "success": True,
+        "message": "Logged out successfully.",
+    }

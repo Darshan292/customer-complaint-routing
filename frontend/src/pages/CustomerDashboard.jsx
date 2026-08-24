@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import TicketDetailModal from "../components/TicketDetailModal";
+import NotificationCenter from "../components/NotificationCenter";
 import {
   FiAlertTriangle,
   FiCheckCircle,
@@ -42,6 +44,7 @@ function slaLabel(ticket) {
 }
 
 export default function CustomerDashboard() {
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [tickets, setTickets] = useState([]);
@@ -58,6 +61,17 @@ export default function CustomerDashboard() {
     setToast({ type, title, message });
     window.clearTimeout(window.__customerToast);
     window.__customerToast = window.setTimeout(() => setToast(null), 5500);
+  };
+
+  const logout = async () => {
+    try {
+      await API.post("/logout");
+    } catch (err) {
+      console.warn("Server logout unavailable:", err);
+    } finally {
+      localStorage.removeItem("user");
+      navigate("/");
+    }
   };
 
   const load = async () => {
@@ -111,6 +125,44 @@ export default function CustomerDashboard() {
         .includes(q);
     });
   }, [tickets, filter, search]);
+
+  const updatePriority = async (id, nextPriority) => {
+    setLoading(true);
+
+    try {
+      const response = await API.put(
+        `/tickets/${id}/priority`,
+        { priority: nextPriority },
+      );
+
+      await load();
+
+      const latest = (
+        await API.get(
+          `/tickets/customer/${encodeURIComponent(user.name)}`
+        )
+      ).data.find((ticket) => ticket.id === id);
+
+      if (latest) {
+        await openTicket(latest);
+      }
+
+      notify(
+        "success",
+        `Ticket #${id} priority updated`,
+        `Your requested priority is now ${response.data?.priority_level || nextPriority}.`
+      );
+    } catch (err) {
+      notify(
+        "error",
+        "Priority change rejected",
+        err.response?.data?.detail ||
+          "Unable to change ticket priority."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const submit = async () => {
     if (text.trim().length < 10) {
@@ -216,8 +268,12 @@ export default function CustomerDashboard() {
         </div>
 
         <div className="customer-top-actions">
+          <NotificationCenter />
           <button className="customer-refresh" onClick={load}>
             <FiRefreshCw /> Refresh
+          </button>
+          <button className="customer-refresh" onClick={logout}>
+            Logout
           </button>
 
           <div className="customer-profile">
@@ -441,6 +497,7 @@ export default function CustomerDashboard() {
           mode="customer"
           events={detail.events}
           sla={detail.sla}
+          onPriority={updatePriority}
           onClose={() => setSelectedTicket(null)}
         />
       )}

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import TicketDetailModal from "../components/TicketDetailModal";
+import NotificationCenter from "../components/NotificationCenter";
 import {
   FiActivity,
   FiAlertTriangle,
@@ -46,6 +48,7 @@ function MetricCard({ icon, label, value, tone = "" }) {
 }
 
 export default function AgentDashboard() {
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [tickets, setTickets] = useState([]);
@@ -70,6 +73,17 @@ export default function AgentDashboard() {
     setToast({ type, title, message });
     window.clearTimeout(window.__agentToast);
     window.__agentToast = window.setTimeout(() => setToast(null), 5000);
+  };
+
+  const logout = async () => {
+    try {
+      await API.post("/logout");
+    } catch (err) {
+      console.warn("Server logout unavailable:", err);
+    } finally {
+      localStorage.removeItem("user");
+      navigate("/");
+    }
   };
 
   const load = async () => {
@@ -373,8 +387,12 @@ export default function AgentDashboard() {
         </div>
 
         <div className="agent-top-actions">
+          <NotificationCenter />
           <button className="agent-refresh" onClick={load}>
             <FiRefreshCw /> Refresh
+          </button>
+          <button className="agent-refresh" onClick={logout}>
+            Logout
           </button>
 
           <div className="agent-profile-card">

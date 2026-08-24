@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import {
   FiActivity, FiAlertOctagon, FiAlertTriangle, FiBarChart2, FiBell, FiCheckCircle,
@@ -6,6 +7,7 @@ import {
   FiShield, FiSliders, FiUserCheck, FiUsers, FiUserPlus, FiZap, FiX,
 } from "react-icons/fi";
 import TicketDetailModal from "../components/TicketDetailModal";
+import NotificationCenter from "../components/NotificationCenter";
 import "./AdminDashboard.css";
 
 const ACTIVE = ["OPEN", "IN_PROGRESS", "PENDING_CUSTOMER"];
@@ -16,6 +18,7 @@ const initials = (name = "") => name.split(" ").map((p) => p[0]).slice(0, 2).joi
 function priorityClass(value = "") { return value.toLowerCase(); }
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   const [dashboard, setDashboard] = useState(null);
   const [tickets, setTickets] = useState([]);
   const [agents, setAgents] = useState([]);
@@ -38,6 +41,17 @@ export default function AdminDashboard() {
   const notify = (type, title, body) => {
     setNotice({ type, title, body });
     window.setTimeout(() => setNotice(null), 6500);
+  };
+
+  const logout = async () => {
+    try {
+      await API.post("/logout");
+    } catch (err) {
+      console.warn("Server logout unavailable:", err);
+    } finally {
+      localStorage.removeItem("user");
+      navigate("/");
+    }
   };
 
   const load = async () => {
@@ -284,7 +298,7 @@ export default function AdminDashboard() {
 
       <header className="admin-topbar">
         <div className="brand-block"><div className="brand-mark"><FiCpu /></div><div><div className="admin-eyebrow">ENTERPRISE SERVICE OPERATIONS</div><h1>Complaint Operations Center</h1><p>AI routing · workforce orchestration · SLA command · operational control</p></div></div>
-        <div className="top-actions"><span className="live-indicator"><i /> LIVE</span><button className="top-btn" onClick={load}><FiRefreshCw /> Refresh</button><button className="top-btn primary" disabled={actionLoading} onClick={autoAssignAll}><FiZap /> Auto-route queue</button></div>
+        <div className="top-actions"><span className="live-indicator"><i /> LIVE</span><NotificationCenter /><button className="top-btn" onClick={load}><FiRefreshCw /> Refresh</button><button className="top-btn primary" disabled={actionLoading} onClick={autoAssignAll}><FiZap /> Auto-route queue</button><button className="top-btn" onClick={logout}>Logout</button></div>
       </header>
 
       {error && <div className="admin-error"><FiAlertTriangle /><span>{error}</span><button onClick={() => setError("")}><FiX /></button></div>}

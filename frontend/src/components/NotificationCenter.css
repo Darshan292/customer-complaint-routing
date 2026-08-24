@@ -1,0 +1,232 @@
+.notification-center {
+  position: relative;
+  z-index: 100;
+}
+
+.notification-trigger {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #dce3ed;
+  border-radius: 10px;
+  background: #fff;
+  color: #59687f;
+  cursor: pointer;
+}
+
+.notification-trigger:hover,
+.notification-trigger.has-unread {
+  border-color: #b7c9ed;
+  color: #1e5eff;
+  box-shadow: 0 8px 20px rgba(30, 94, 255, .08);
+}
+
+.notification-trigger.has-unread::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 8px;
+  border: 1px solid rgba(30, 94, 255, .18);
+  pointer-events: none;
+}
+
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border: 2px solid white;
+  border-radius: 99px;
+  background: #c43c42;
+  color: white;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.notification-popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(420px, calc(100vw - 28px));
+  overflow: hidden;
+  border: 1px solid #dbe3ed;
+  border-radius: 15px;
+  background: white;
+  box-shadow: 0 22px 60px rgba(22, 37, 61, .20);
+}
+
+.notification-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #edf1f5;
+  background: #fbfcfe;
+}
+
+.notification-head > div:first-child span,
+.notification-head > div:first-child strong {
+  display: block;
+}
+
+.notification-head > div:first-child span {
+  color: #7b8799;
+  font: 800 8px "IBM Plex Mono", monospace;
+  letter-spacing: .1em;
+}
+
+.notification-head > div:first-child strong {
+  margin-top: 4px;
+  color: #29374c;
+  font-size: 13px;
+}
+
+.notification-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notification-head-actions button {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: #1e5eff;
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.notification-head-actions .notification-close {
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+  border: 1px solid #dde4ed;
+  border-radius: 8px;
+  color: #728096;
+}
+
+.notification-list {
+  max-height: 430px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 10px;
+  padding: 13px 15px;
+  border: 0;
+  border-bottom: 1px solid #f0f3f7;
+  text-align: left;
+  background: white;
+  cursor: pointer;
+}
+
+.notification-item:hover {
+  background: #f8fbff;
+}
+
+.notification-item.unread {
+  background: #f4f8ff;
+}
+
+.notification-item-mark {
+  display: grid;
+  place-items: center;
+}
+
+.notification-item-mark span {
+  display: grid;
+  place-items: center;
+  min-width: 40px;
+  min-height: 30px;
+  padding: 0 5px;
+  border-radius: 8px;
+  background: #edf3ff;
+  color: #1e5eff;
+  font: 800 7px "IBM Plex Mono", monospace;
+}
+
+.notification-item-body {
+  min-width: 0;
+}
+
+.notification-item-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.notification-item-title strong {
+  color: #344158;
+  font-size: 10px;
+}
+
+.notification-item-title i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1e5eff;
+}
+
+.notification-item-body p {
+  margin: 4px 0 0;
+  color: #6f7d93;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.notification-item-body time {
+  display: block;
+  margin-top: 5px;
+  color: #a1aab7;
+  font-size: 8px;
+}
+
+.notification-item.read {
+  opacity: .82;
+}
+
+.notification-empty {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  padding: 20px;
+  color: #8491a4;
+  text-align: center;
+}
+
+.notification-empty svg {
+  margin-bottom: 9px;
+  font-size: 24px;
+  color: #3a9660;
+}
+
+.notification-empty strong,
+.notification-empty span {
+  display: block;
+}
+
+.notification-empty strong {
+  color: #4c5a70;
+  font-size: 11px;
+}
+
+.notification-empty span {
+  max-width: 260px;
+  margin-top: 5px;
+  font-size: 9px;
+  line-height: 1.45;
+}

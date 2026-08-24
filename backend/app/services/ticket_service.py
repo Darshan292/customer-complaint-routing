@@ -7,6 +7,7 @@ from app.models.ticket_event import TicketEvent
 from app.services.team_service import TeamService
 
 from app.services.sla_service import SLAService
+from app.services.notification_service import NotificationService
 
 
 class TicketService:
@@ -90,6 +91,15 @@ class TicketService:
         db.add(TicketEvent(ticket_id=ticket.id, event_type="CREATED", to_value="OPEN", notes="Ticket created and AI-analyzed."))
         if assignment:
             db.add(TicketEvent(ticket_id=ticket.id, event_type="AUTO_ASSIGNED", to_value=assignment["agent"].name, notes=assignment["explanation"]))
+
+            NotificationService.assignment(
+                db,
+                ticket,
+                agent_id=assignment["agent"].id,
+                agent_name=assignment["agent"].name,
+                mode="AUTO",
+                previous_agent_id=None,
+            )
         db.commit()
         db.refresh(ticket)
         return ticket

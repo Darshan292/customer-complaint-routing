@@ -490,8 +490,8 @@ export default function TicketDetailModal({
           <section className="td-card controls-card">
             <div className="td-section-heading"><div><div className="td-card-label">TICKET CONTROL</div><h3>Priority and lifecycle</h3></div></div>
             <div className="td-control-grid">
-              <label>Priority<select value={ticket.priority_level || "Medium"} onChange={(e) => onPriority(ticket.id, e.target.value)}><option disabled>Select priority</option>{PRIORITIES.map((p) => <option key={p}>{p}</option>)}</select></label>
-              <label>Status<select value={ticket.status} onChange={(e) => onStatus(ticket.id, e.target.value)} disabled={mode !== "admin" && !ticket.assigned_agent_id}>{STATUS_OPTIONS.map((s) => <option key={s}>{s}</option>)}</select></label>
+              <label>Priority<select value={ticket.priority_level || "Medium"} onChange={(e) => onPriority?.(ticket.id, e.target.value)}><option disabled>Select priority</option>{PRIORITIES.map((p) => <option key={p}>{p}</option>)}</select></label>
+              <label>Status<select value={ticket.status} onChange={(e) => onStatus?.(ticket.id, e.target.value)} disabled={mode !== "admin" && !ticket.assigned_agent_id}>{STATUS_OPTIONS.map((s) => <option key={s}>{s}</option>)}</select></label>
             </div>
           </section>
 

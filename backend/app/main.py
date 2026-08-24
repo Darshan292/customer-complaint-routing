@@ -6,10 +6,12 @@ from app.models.user import User
 from app.models.agent import Agent
 from app.models.team import Team
 from app.models.ticket_event import TicketEvent
+from app.models.notification import Notification
 from app.routers.ticket_router import router as ticket_router
 from app.routers.analysis_router import router as analysis_router
 from app.routers.auth_router import router as auth_router
 from app.routers.agent_router import router as agent_router
+from app.routers.notification_router import router as notification_router
 
 app = FastAPI(title="Enterprise Complaint Operations Platform", version="2.0.0")
 Base.metadata.create_all(bind=engine)
@@ -24,6 +26,7 @@ app.include_router(analysis_router, prefix="/api")
 app.include_router(ticket_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
 app.include_router(agent_router, prefix="/api")
+app.include_router(notification_router, prefix="/api")
 
 @app.get("/")
 def health():

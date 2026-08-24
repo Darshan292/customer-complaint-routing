@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Header
 from sqlalchemy.orm import Session
 from app.services.sla_service import SLAService
 from sqlalchemy import func
@@ -29,6 +29,7 @@ from app.services.escalation_service import (
 )
 from app.services.ai_resolution_service import AIResolutionService
 from app.services.similar_ticket_service import SimilarTicketService
+from app.services.notification_service import NotificationService
 
 router = APIRouter(tags=["Tickets"])
 
@@ -398,6 +399,13 @@ def update_ticket_status(
         )
     )
 
+    NotificationService.status_change(
+        db,
+        ticket,
+        previous_status,
+        request.status,
+    )
+
     db.commit()
     db.refresh(ticket)
 
@@ -418,6 +426,10 @@ def update_ticket_status(
 def update_priority(
     ticket_id: int,
     request: PriorityUpdate,
+    user_role: str | None = Header(
+        default=None,
+        alias="X-User-Role",
+    ),
     db: Session = Depends(get_db),
 ):
 
@@ -470,7 +482,18 @@ def update_priority(
         ]
     )
 
-    ticket.priority_source = "ADMIN"
+    source_by_role = {
+        "customer": "CUSTOMER",
+        "agent": "AGENT",
+        "admin": "ADMIN",
+    }
+
+    ticket.priority_source = (
+        source_by_role.get(
+            (user_role or "").lower(),
+            "ADMIN",
+        )
+    )
 
     ticket.sla_hours = (
         PriorityService.SLA_HOURS[
@@ -497,7 +520,19 @@ def update_priority(
             event_type="PRIORITY_CHANGED",
             from_value=old_priority,
             to_value=request.priority,
+            notes=(
+                f"Priority changed from {old_priority} "
+                f"to {request.priority}. "
+                f"Source={ticket.priority_source}."
+            ),
         )
+    )
+
+    NotificationService.priority_change(
+        db,
+        ticket,
+        old_priority,
+        request.priority,
     )
 
     db.commit()
@@ -705,6 +740,15 @@ def assign_ticket(
                 )
             ),
         )
+    )
+
+    NotificationService.assignment(
+        db,
+        ticket,
+        agent_id=agent.id,
+        agent_name=agent.name,
+        mode="MANUAL",
+        previous_agent_id=previous_agent_id,
     )
 
     db.commit()
@@ -1542,6 +1586,15 @@ def auto_assign_ticket(
         )
     )
 
+    NotificationService.assignment(
+        db,
+        ticket,
+        agent_id=agent.id,
+        agent_name=agent.name,
+        mode="AUTO",
+        previous_agent_id=None,
+    )
+
     # Assignment does not mean the resolver has started work.
     # The ticket remains OPEN until the resolver changes it to IN_PROGRESS.
     db.commit()
@@ -1677,6 +1730,15 @@ def auto_assign_unassigned(
                 to_value=agent.name,
                 notes=result["explanation"],
             )
+        )
+
+        NotificationService.assignment(
+            db,
+            ticket,
+            agent_id=agent.id,
+            agent_name=agent.name,
+            mode="AUTO",
+            previous_agent_id=None,
         )
 
         # Keep OPEN until the resolver starts work.
