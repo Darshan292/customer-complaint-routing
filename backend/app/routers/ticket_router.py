@@ -29,6 +29,7 @@ from app.services.escalation_service import (
 )
 from app.services.ai_resolution_service import AIResolutionService
 from app.services.similar_ticket_service import SimilarTicketService
+from app.services.hybrid_retrieval_service import HybridRetrievalService
 from app.services.notification_service import NotificationService
 
 router = APIRouter(tags=["Tickets"])
@@ -786,7 +787,17 @@ def ai_resolution_recommendation(
         )
 
     try:
-        recommendation = AIResolutionService.recommend(ticket)
+        context = HybridRetrievalService.resolution_context(
+            ticket,
+            db,
+            ticket_limit=4,
+            sop_limit=2,
+            kb_limit=3,
+        )
+        recommendation = AIResolutionService.recommend(
+            ticket,
+            context,
+        )
     except Exception as exc:
         raise HTTPException(
             502,
@@ -797,7 +808,13 @@ def ai_resolution_recommendation(
         "ticket_id": ticket.id,
         "generated_by": "Groq",
         "model": settings.MODEL_NAME,
+        "retrieval": {
+            "method": context["method"],
+            "embedding_model": context["embedding_model"],
+            "reranker_model": context["reranker_model"],
+        },
         "recommendation": recommendation,
+        "context": context,
     }
 
 
@@ -830,16 +847,81 @@ def similar_resolved_tickets(
         .all()
     )
 
-    results = SimilarTicketService.find_similar(
-        ticket=ticket,
-        resolved_tickets=resolved_tickets,
-        limit=limit,
+    context = HybridRetrievalService.resolution_context(
+        ticket,
+        db,
+        ticket_limit=limit,
+        sop_limit=0,
+        kb_limit=0,
     )
+
+    results = []
+    for item in context["tickets"]:
+        results.append(
+            {
+                "ticket_id": item["ticket_id"],
+                "similarity_score": round(
+                    float(item.get("rerank_score_normalized", 0.0)),
+                    3,
+                ),
+                "category": item.get("category"),
+                "subcategory": item.get("subcategory"),
+                "priority_level": item.get("priority_level"),
+                "summary": item.get("summary"),
+                "complaint_text": item.get("complaint_text"),
+                "resolved_at": item.get("resolved_at"),
+                "assigned_agent_name": item.get("assigned_agent_name"),
+                "resolution_outcome": item.get("content"),
+                "status": item.get("status"),
+                "dense_score": item.get("dense_score"),
+                "sparse_score": item.get("sparse_score"),
+                "rerank_score": item.get("rerank_score"),
+                "rerank_score_normalized": item.get("rerank_score_normalized"),
+            }
+        )
 
     return {
         "ticket_id": ticket.id,
         "count": len(results),
+        "retrieval_method": context["method"],
         "tickets": results,
+    }
+
+
+@router.get(
+    "/tickets/{ticket_id}/resolution-context"
+)
+def resolution_context(
+    ticket_id: int,
+    db: Session = Depends(get_db),
+):
+    """Return the resolver-facing evidence retrieved from tickets, SOP and KB."""
+    ticket = (
+        db.query(Complaint)
+        .filter(Complaint.id == ticket_id)
+        .first()
+    )
+
+    if not ticket:
+        raise HTTPException(404, "Ticket not found")
+
+    try:
+        context = HybridRetrievalService.resolution_context(
+            ticket,
+            db,
+            ticket_limit=4,
+            sop_limit=2,
+            kb_limit=3,
+        )
+    except Exception as exc:
+        raise HTTPException(
+            502,
+            detail=f"Resolution context retrieval failed: {exc}",
+        )
+
+    return {
+        "ticket_id": ticket.id,
+        **context,
     }
 
 

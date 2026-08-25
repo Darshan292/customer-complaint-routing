@@ -88,14 +88,17 @@ export default function TicketDetailModal({
   onEscalate,
   resolutionRecommendation = null,
   similarTickets = [],
+  resolutionContext = null,
   aiLoading = false,
   similarLoading = false,
   onLoadResolutionRecommendation,
   onLoadSimilarTickets,
+  onLoadResolutionContext,
 }) {
   const [manualAgentId, setManualAgentId] = useState("");
   const [manualConfirm, setManualConfirm] = useState(false);
   const [showAiHelp, setShowAiHelp] = useState(false);
+  const [showResolutionContext, setShowResolutionContext] = useState(false);
 
   const operationalTeam = useMemo(() => resolveTeam(ticket, analysis), [ticket, analysis]);
   const candidates = analysis?.candidates || [];
@@ -344,14 +347,25 @@ export default function TicketDetailModal({
                         Get a diagnosis, investigation steps, verification checks and a suggested customer response.
                       </span>
                     </div>
-                    <button
-                      className="td-primary ai-generate-button"
-                      onClick={() => onLoadResolutionRecommendation?.(ticket.id)}
-                      disabled={aiLoading}
-                    >
-                      <FiZap />
-                      {aiLoading ? "Generating..." : "Generate solution"}
-                    </button>
+                    <div className="ai-action-group">
+                      <button
+                        className="td-primary ai-generate-button"
+                        onClick={() => onLoadResolutionRecommendation?.(ticket.id)}
+                        disabled={aiLoading}
+                      >
+                        <FiZap />
+                        {aiLoading ? "Generating..." : "Generate solution"}
+                      </button>
+                      <button
+                        className="td-secondary ai-context-button"
+                        onClick={() => {
+                          if (!resolutionContext) onLoadResolutionContext?.(ticket.id);
+                          setShowResolutionContext(true);
+                        }}
+                      >
+                        <FiBookOpen /> View context
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="ai-resolution-content">
@@ -402,14 +416,25 @@ export default function TicketDetailModal({
                       <p>{resolutionRecommendation.customer_response || "No response draft returned."}</p>
                     </div>
 
-                    <button
-                      className="td-secondary ai-refresh ai-refresh-button"
-                      onClick={() => onLoadResolutionRecommendation?.(ticket.id)}
-                      disabled={aiLoading}
-                    >
-                      <FiRefreshCw />
-                      {aiLoading ? "Refreshing..." : "Refresh recommendation"}
-                    </button>
+                    <div className="ai-action-group ai-bottom-actions">
+                      <button
+                        className="td-secondary ai-context-button"
+                        onClick={() => {
+                          if (!resolutionContext) onLoadResolutionContext?.(ticket.id);
+                          setShowResolutionContext(true);
+                        }}
+                      >
+                        <FiBookOpen /> View context
+                      </button>
+                      <button
+                        className="td-secondary ai-refresh ai-refresh-button"
+                        onClick={() => onLoadResolutionRecommendation?.(ticket.id)}
+                        disabled={aiLoading}
+                      >
+                        <FiRefreshCw />
+                        {aiLoading ? "Refreshing..." : "Refresh recommendation"}
+                      </button>
+                    </div>
                   </div>
                 )}
               </section>
@@ -484,6 +509,105 @@ export default function TicketDetailModal({
                   </div>
                 )}
               </section>
+
+              {showResolutionContext && (
+                <div className="resolution-context-backdrop" onMouseDown={(event) => {
+                  if (event.target === event.currentTarget) setShowResolutionContext(false);
+                }}>
+                  <div className="resolution-context-modal">
+                    <div className="resolution-context-header">
+                      <div>
+                        <span className="section-kicker">RETRIEVED RESOLUTION CONTEXT</span>
+                        <h3>Evidence used for this ticket</h3>
+                        <p>Hybrid semantic + lexical retrieval with reciprocal-rank fusion and cross-encoder reranking.</p>
+                      </div>
+                      <button className="td-icon-button" onClick={() => setShowResolutionContext(false)}>×</button>
+                    </div>
+
+                    <div className="resolution-context-body">
+                      {!resolutionContext && (
+                        <div className="td-empty">
+                          <FiRefreshCw />
+                          <div><strong>Loading resolution context...</strong><span>Searching historical tickets, the controlled SOP and the knowledge base.</span></div>
+                        </div>
+                      )}
+
+                      {resolutionContext && (
+                        <>
+                          <div className="resolution-context-meta">
+                            <span>{resolutionContext.method}</span>
+                            <span>Embedding: {resolutionContext.embedding_model}</span>
+                            <span>Reranker: {resolutionContext.reranker_model}</span>
+                          </div>
+
+                          <div className="context-source-section">
+                            <div className="context-source-heading">
+                              <div><span className="section-kicker">TICKET DUMP</span><h4>Historical resolved cases</h4></div>
+                              <span>{resolutionContext.tickets?.length || 0} retrieved</span>
+                            </div>
+                            <div className="context-card-list">
+                              {(resolutionContext.tickets || []).map((item) => (
+                                <article className="context-evidence-card" key={`${item.source_type}-${item.source_id}`}>
+                                  <div className="context-evidence-top">
+                                    <strong>Ticket #{item.ticket_id}</strong>
+                                    <span>{item.status}</span>
+                                    <span>{item.rerank_score != null ? `Reranker ${Number(item.rerank_score).toFixed(2)}` : "Hybrid match"}</span>
+                                  </div>
+                                  <h5>{item.title}</h5>
+                                  <div className="context-chip-row">
+                                    <span>{item.category || "—"}</span>
+                                    <span>{item.subcategory || "—"}</span>
+                                    <span>{item.priority_level || "—"}</span>
+                                    {item.assigned_agent_name && <span>Resolved by {item.assigned_agent_name}</span>}
+                                  </div>
+                                  <p><strong>Complaint:</strong> {item.complaint_text || "Historical complaint text unavailable."}</p>
+                                  <details><summary>View historical record</summary><pre>{item.content}</pre></details>
+                                </article>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="context-source-section">
+                            <div className="context-source-heading">
+                              <div><span className="section-kicker">CONTROLLED SOP</span><h4>Relevant procedure sections</h4></div>
+                              <span>{resolutionContext.sop?.length || 0} retrieved</span>
+                            </div>
+                            <div className="context-card-list">
+                              {(resolutionContext.sop || []).map((item) => (
+                                <article className="context-evidence-card controlled" key={`${item.source_type}-${item.source_id}`}>
+                                  <div className="context-evidence-top">
+                                    <strong>{item.article_id || item.source_id}</strong>
+                                    <span>{item.title}</span>
+                                  </div>
+                                  <details open><summary>View SOP section</summary><pre>{item.content}</pre></details>
+                                </article>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="context-source-section">
+                            <div className="context-source-heading">
+                              <div><span className="section-kicker">KNOWLEDGE BASE</span><h4>Relevant troubleshooting articles</h4></div>
+                              <span>{resolutionContext.kb?.length || 0} retrieved</span>
+                            </div>
+                            <div className="context-card-list">
+                              {(resolutionContext.kb || []).map((item) => (
+                                <article className="context-evidence-card controlled" key={`${item.source_type}-${item.source_id}`}>
+                                  <div className="context-evidence-top">
+                                    <strong>{item.article_id || item.source_id}</strong>
+                                    <span>{item.title}</span>
+                                  </div>
+                                  <details open><summary>View KB section</summary><pre>{item.content}</pre></details>
+                                </article>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </>
           )}
 

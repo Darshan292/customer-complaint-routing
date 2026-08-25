@@ -1,0 +1,1739 @@
+                                                                                       ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+                                ENTERPRISE SUPPORT OPERATIONS | CONTROLLED KNOWLEDGE BASE
+
+
+
+                 Enterprise Complaint Routing
+                       Knowledge Base
+Operational resolution procedures, diagnostics, routing guidance and approved resolver playbooks
+
+Document control                                                            Value
+
+
+Knowledge Base ID                                                           KB-ESOPS-001
+
+
+Version                                                                     1.0
+
+
+Owner                                                                       Enterprise Support Operations
+
+
+Classification                                                              Internal Use / Controlled
+
+
+Effective Date                                                              25 August 2026
+
+
+Review Cycle                                                                Quarterly and after material process/model changes
+
+
+
+PURPOSE
+This knowledge base is the operational reference for resolving common complaint patterns in the enterprise complaint-routing platform. It is
+structured for human resolver use and later retrieval by the AI resolution assistant.
+
+
+
+
+GOVERNANCE
+Articles are approved operational guidance. They do not authorize irreversible actions, credential disclosure, financial adjustments or security
+exceptions without appropriate policy and approval.
+
+
+
+Prepared for: Customer Support, Service Desk, Resolver Teams, Operations Managers, Platform Administrators and AI-assisted
+                                                    Support Operations
+
+
+
+
+                                                KB-ESOPS-001 | Version 1.0 | Internal Use | Page 1
+                                                                                               ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+1. Knowledge Base Operating Model
+This knowledge base is designed as a controlled, article-based operational library. Each article has a stable identifier, a defined audience,
+symptoms, likely causes, safe procedures, validation criteria and escalation conditions. The same structure supports human search, semantic
+retrieval and future GraphRAG or retrieval-augmented generation workflows.
+
+1.1 How to use an article
+      Identify the ticket symptom and confirm that the article applies before executing steps.
+      Use the current ticket data, SLA state, category, subcategory, customer impact and existing audit trail as the primary context.
+      Execute only steps authorized for the resolver role. Do not invent system facts or claim that a remediation succeeded without verification.
+      Record material actions in the ticket timeline or internal comment stream where available.
+      Escalate when the article says to escalate, when evidence contradicts the article, or when the ticket crosses an approval boundary.
+
+1.2 Article taxonomy
+    Domain                                               Typical article IDs                                   Primary resolver use
+
+
+    Identity & Access                                    KB-ACC-001 to 003                                     Login, password, account lockout, identity
+                                                                                                               compromise
+
+
+    Security & Privacy                                   KB-SEC-001 to 003                                     Suspicious login, data exposure, unauthorized
+                                                                                                               access
+
+
+    Billing & Subscription                               KB-FIN-001 to 003                                     Duplicate charges, payment, subscription
+                                                                                                               activation/refunds
+
+
+    Technical & Availability                             KB-TECH-001 to 004                                    Service outage, connectivity, integration/API
+                                                                                                               issues
+
+
+    Platform Operations                                  KB-OPS-001 to 004                                     Routing, SLA, assignment, notification and
+                                                                                                               workflow problems
+
+
+    AI-assisted Resolution                               KB-AI-001 to 002                                      AI recommendation use and similar-case
+                                                                                                               analysis
+
+
+
+
+1.3 Retrieval fields
+Recommended metadata for indexing: article_id, title, domain, product_area, symptom, category, subcategory, priority, resolver_role,
+keywords, prerequisites, procedure, validation, escalation, related_article_ids, effective_date, owner, version.
+
+    RETRIEVAL PRINCIPLE
+    The best retrieval result is not necessarily the most similar sentence. Prefer an article with the correct category, subcategory, resolver role and
+    operational condition, then use text similarity to rank within that filtered set.
+
+
+
+
+                                                      KB-ESOPS-001 | Version 1.0 | Internal Use | Page 2
+                                                                                              ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+2. Priority, SLA and Routing Decision Reference
+Use this page as the fast operational matrix before opening a detailed article. Final priority remains subject to the platform priority engine and
+authorized operational override.
+
+    Priority                               Typical business condition              Default response posture               Resolver guidance
+
+
+    Critical                               Security compromise, broad              Immediate triage; shortest SLA;        Use experienced resolver, prefer
+                                           outage, severe business stoppage,       escalation readiness                   strongest skill fit and appropriate
+                                           major financial exposure                                                       on-call coverage
+
+
+    High                                   Material business impact,               Prompt assignment; monitor SLA         Prefer skilled resolver with
+                                           customer-blocking failure,              closely                                available capacity and healthy SLA
+                                           significant payment/subscription                                               exposure
+                                           problem
+
+
+    Medium                                 Contained operational issue,            Standard queue handling                Use balanced workload and skill
+                                           common account or billing issue                                                fit
+
+
+    Low                                    Information, appreciation, minor        Normal queue; avoid overloading        Use general technical/support
+                                           issue, non-blocking request             critical specialists                   capacity where appropriate
+
+
+
+
+2.1 Resolver assignment gates
+       Correct operational team is a hard boundary for automatic routing.
+       Resolver must be active and configured for automatic assignment.
+       Normal automatic routing requires workforce eligibility, schedule alignment and capacity availability.
+       Skill fit influences ranking; it does not replace a hard eligibility rule.
+       Priority load and SLA exposure reduce the score of heavily burdened resolvers.
+       On-call routing is an emergency fallback for defined priority conditions when normal workforce candidates are unavailable.
+       Manual admin assignment is an operational override and must be auditable.
+
+2.2 Ticket lifecycle
+    State                                               Meaning                                              Required ownership
+
+
+    OPEN                                                Ticket exists; may be unassigned or assigned         No resolver required for an unassigned queue
+                                                        and waiting to be started                            ticket
+
+
+    IN_PROGRESS                                         Resolver has actively started work                   Assigned resolver required
+
+
+    PENDING_CUSTOMER                                    Resolver is waiting for customer                     Assigned resolver required
+                                                        information/action
+
+
+    RESOLVED                                            Resolver has completed the technical/service         Assigned resolver and resolution evidence
+                                                        resolution                                           expected
+
+
+    CLOSED                                              Ticket is administratively closed after              Historical record
+                                                        resolution/confirmation
+
+
+
+
+                                                     KB-ESOPS-001 | Version 1.0 | Internal Use | Page 3
+                                                                                                 ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+3. KB-ACC-001 - Account locked / unable to sign in
+Use when a customer cannot access the application because the account appears locked or login attempts are rejected.
+
+    Field                                                                              Value
+
+
+    Article ID                                                                         KB-ACC-001
+
+
+    Audience                                                                           Customer Support, Technical Support, Resolver
+
+
+    Severity / Priority                                                                Medium to High
+
+
+    Applies when                                                                       Customer reports locked account or repeated login rejection.
+
+
+    Related articles                                                                   KB-SEC-001, KB-TECH-001
+
+
+
+
+Resolution context
+      Symptom: Customer reports locked account or repeated login rejection.
+      Symptom: No evidence yet of malicious account takeover.
+      Likely cause: Account lockout policy triggered.
+      Likely cause: Incorrect credentials or stale browser/session state.
+      Likely cause: Identity synchronization or authentication service issue.
+
+Prerequisites and guardrails
+      Confirm customer identity using approved verification controls.
+      Do not request or store passwords, MFA secrets or recovery codes.
+      Review ticket history for recent password or security changes.
+
+Resolution procedure
+1.     1. Confirm exact error text and approximate start time.
+2.     2. Check whether other users in the same tenant are affected.
+3.     3. Verify whether the identity provider/authentication dependency is operational.
+4.     4. If the issue is a local lockout, use the authorized account-unlock workflow.
+5.     5. Ask the customer to retry through a clean session or approved client path.
+6.     6. If the error persists across users or tenants, move to technical incident analysis.
+
+Validation and closure criteria
+      Customer can authenticate successfully.
+      No active lockout remains.
+      Ticket contains verification evidence and final action taken.
+
+Escalation
+      Escalate to Cyber Security when takeover indicators appear.
+      Escalate to Site Reliability when multiple users/tenants are simultaneously affected.
+      Escalate to platform owner when identity synchronization remains inconsistent after approved remediation.
+
+    OPERATOR NOTE
+    Never bypass identity verification merely to meet SLA.
+
+
+
+
+                                                       KB-ESOPS-001 | Version 1.0 | Internal Use | Page 4
+                                                                                                       ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+4. KB-ACC-002 - Password reset email not received
+Use when password reset was requested but the verification/reset email does not arrive.
+
+    Field                                                                              Value
+
+
+    Article ID                                                                         KB-ACC-002
+
+
+    Audience                                                                           Customer Support, Technical Support, Resolver
+
+
+    Severity / Priority                                                                Medium
+
+
+    Applies when                                                                       Customer can access email but no reset message is received.
+
+
+    Related articles                                                                   KB-ACC-001, KB-OPS-002
+
+
+
+
+Resolution context
+      Symptom: Customer can access email but no reset message is received.
+      Symptom: Reset request may succeed in the application but email is absent.
+      Likely cause: Mailbox filtering or spam quarantine.
+      Likely cause: Email delivery delay.
+      Likely cause: Incorrect customer email or stale identity record.
+      Likely cause: Notification provider outage.
+
+Prerequisites and guardrails
+      Confirm the destination email without exposing private account data.
+      Check whether the customer has received any other system notifications.
+      Do not disclose whether an account exists to an unverified party.
+
+Resolution procedure
+7.     1. Confirm request timestamp and channel.
+8.     2. Ask customer to check spam/quarantine and corporate mail filters.
+9.     3. Verify the application generated the reset request successfully.
+10.    4. Retry only through the approved reset mechanism.
+11.    5. If repeated attempts fail, inspect notification delivery telemetry or notification status.
+12.    6. Escalate repeated delivery failures as a platform/notification incident.
+
+Validation and closure criteria
+      Customer receives a valid reset message.
+      Customer can complete password reset.
+      No duplicate or unsafe reset tokens remain active.
+
+Escalation
+      Escalate to notification/platform operations for repeated delivery failure.
+      Escalate to security if the reset request appears unauthorized.
+
+    OPERATOR NOTE
+    Avoid telling the customer that an account does or does not exist based solely on email delivery behavior.
+
+
+
+
+                                                        KB-ESOPS-001 | Version 1.0 | Internal Use | Page 5
+                                                                                                ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+5. KB-SEC-001 - Suspicious login alert / suspected credential
+compromise
+Use when a customer reports foreign login alerts, suspicious sessions or possible credential compromise.
+
+    Field                                                                           Value
+
+
+    Article ID                                                                      KB-SEC-001
+
+
+    Audience                                                                        Cyber Security, Fraud Investigation, Resolver
+
+
+    Severity / Priority                                                             Critical
+
+
+    Applies when                                                                    Unexpected login from an unfamiliar location.
+
+
+    Related articles                                                                KB-SEC-002, KB-FIN-001
+
+
+
+
+Resolution context
+      Symptom: Unexpected login from an unfamiliar location.
+      Symptom: Customer believes credentials were compromised.
+      Likely cause: Credential theft.
+      Likely cause: Session/token compromise.
+      Likely cause: Compromised endpoint or browser.
+
+Prerequisites and guardrails
+      Treat as a potential security incident.
+      Use the approved identity verification process.
+      Do not ask for passwords, MFA codes or private recovery secrets.
+
+Resolution procedure
+13.    1. Capture the alert time, location and observed session information available to the customer.
+14.    2. Determine whether the customer still controls the registered communication channel.
+15.    3. Restrict or invalidate sessions using the approved security workflow when authorized.
+16.    4. Force credential reset through the approved mechanism.
+17.    5. Review recent account activity for unauthorized changes or transactions.
+18.    6. Route financial-loss indicators to Fraud Investigation; escalate material or multi-account events to security incident handling.
+
+Validation and closure criteria
+      Unauthorized sessions are contained.
+      Credential reset is completed through approved controls.
+      Any financial or data-impact findings are captured and routed.
+
+Escalation
+      Immediate escalation for active compromise, privileged access, data exposure or financial loss.
+      Escalate to Fraud Investigation for unauthorized payments.
+
+    OPERATOR NOTE
+    Speed matters, but evidence handling and identity verification remain mandatory.
+
+
+
+
+                                                      KB-ESOPS-001 | Version 1.0 | Internal Use | Page 6
+                                                                                             ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+6. KB-SEC-002 - Customer sees another customer's personal
+information
+Use when a customer reports cross-customer visibility or data exposure.
+
+    Field                                                                         Value
+
+
+    Article ID                                                                    KB-SEC-002
+
+
+    Audience                                                                      Cyber Security, Privacy, Operations Manager
+
+
+    Severity / Priority                                                           Critical
+
+
+    Applies when                                                                  Customer can view another user/customer record.
+
+
+    Related articles                                                              KB-SEC-001, KB-OPS-004
+
+
+
+
+Resolution context
+      Symptom: Customer can view another user/customer record.
+      Symptom: Screenshot or evidence indicates unauthorized data access.
+      Likely cause: Authorization policy defect.
+      Likely cause: Tenant/row-level data isolation failure.
+      Likely cause: Cache or session contamination.
+      Likely cause: Configuration or deployment regression.
+
+Prerequisites and guardrails
+      Treat as a potential privacy/security incident.
+      Preserve evidence and avoid broad testing with real customer data.
+      Do not reproduce by accessing unrelated customer records unless specifically authorized.
+
+Resolution procedure
+19.    1. Capture the minimum necessary evidence from the reporter.
+20.    2. Identify tenant, user context and approximate time.
+21.    3. Stop further exposure when an approved containment action exists.
+22.    4. Escalate immediately to Cyber Security/Privacy incident handling.
+23.    5. Record affected data classes without copying unnecessary sensitive values.
+24.    6. Coordinate remediation and customer communication through incident ownership.
+
+Validation and closure criteria
+      Exposure is contained.
+      Incident owner confirms remediation.
+      Required notifications and audit records are complete.
+
+Escalation
+      Immediate security/privacy escalation.
+      Operations manager approval required for customer-impacting containment changes.
+
+    OPERATOR NOTE
+    This article is not a routine resolver troubleshooting procedure; follow incident-management controls when exposure is confirmed.
+
+
+
+
+                                                     KB-ESOPS-001 | Version 1.0 | Internal Use | Page 7
+                                                                                                ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+7. KB-FIN-001 - Duplicate charge / duplicate payment
+Use when a customer reports being charged twice for the same purchase or subscription.
+
+    Field                                                                           Value
+
+
+    Article ID                                                                      KB-FIN-001
+
+
+    Audience                                                                        Finance Operations, Resolver
+
+
+    Severity / Priority                                                             High
+
+
+    Applies when                                                                    Two or more transactions appear to represent the same intended
+                                                                                    purchase.
+
+
+    Related articles                                                                KB-FIN-002, KB-SEC-001
+
+
+
+
+Resolution context
+      Symptom: Two or more transactions appear to represent the same intended purchase.
+      Symptom: Customer requests reversal or refund.
+      Likely cause: Duplicate submission.
+      Likely cause: Payment retry after timeout.
+      Likely cause: Gateway duplication.
+      Likely cause: Delayed authorization/capture creating apparent duplicates.
+
+Prerequisites and guardrails
+      Use transaction identifiers, not card secrets.
+      Do not promise a refund before transaction status is verified.
+      Follow finance approval limits for refunds/reversals.
+
+Resolution procedure
+25.    1. Capture transaction date, amount, currency and non-sensitive reference identifiers.
+26.    2. Determine whether both transactions are settled, pending or reversed.
+27.    3. Check for duplicate order/subscription records.
+28.    4. If one transaction is only an authorization, explain the expected release path.
+29.    5. If both are settled duplicates, initiate the approved refund/reversal workflow.
+30.    6. Record the finance action and reference number in the ticket.
+
+Validation and closure criteria
+      Customer sees one valid charge or two clearly differentiated legitimate transactions.
+      Refund/reversal reference is recorded when applicable.
+      Customer communication matches the actual transaction state.
+
+Escalation
+      Escalate large-value or disputed transactions beyond resolver authority.
+      Escalate suspected fraud to Fraud Investigation.
+
+    OPERATOR NOTE
+    Never paste full payment card numbers or authentication data into the ticket or comments.
+
+
+
+
+                                                      KB-ESOPS-001 | Version 1.0 | Internal Use | Page 8
+                                                                                                   ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+8. KB-FIN-002 - Subscription paid but service not activated
+Use when payment succeeded but the purchased entitlement is not active.
+
+    Field                                                                           Value
+
+
+    Article ID                                                                      KB-FIN-002
+
+
+    Audience                                                                        Finance Operations, Technical Support
+
+
+    Severity / Priority                                                             High
+
+
+    Applies when                                                                    Payment is confirmed but expected service remains unavailable.
+
+
+    Related articles                                                                KB-FIN-001, KB-TECH-002
+
+
+
+
+Resolution context
+      Symptom: Payment is confirmed but expected service remains unavailable.
+      Symptom: Customer has a valid order/subscription reference.
+      Likely cause: Entitlement provisioning delay.
+      Likely cause: Payment-to-subscription synchronization failure.
+      Likely cause: Incorrect account mapping.
+      Likely cause: Activation job failure.
+
+Prerequisites and guardrails
+      Confirm payment using approved transaction/reference data.
+      Verify the target account and purchased plan.
+      Do not manually alter entitlement records outside approved operations.
+
+Resolution procedure
+31.    1. Verify transaction status and subscription/order identifier.
+32.    2. Confirm the intended customer account and plan.
+33.    3. Check whether the entitlement record exists and whether activation completed.
+34.    4. If a provisioning job failed, route to the owning technical queue.
+35.    5. If payment is valid but entitlement is absent, coordinate finance and technical teams.
+36.    6. Communicate the next expected milestone to the customer.
+
+Validation and closure criteria
+      Service entitlement is active.
+      Payment and subscription records reconcile.
+      Customer confirms access or the platform confirms successful activation.
+
+Escalation
+      Escalate provisioning/systemic activation failures.
+      Escalate payment disputes through Finance Operations.
+
+    OPERATOR NOTE
+    Do not solve a finance reconciliation problem by changing technical entitlements without matching transaction evidence.
+
+
+
+
+                                                      KB-ESOPS-001 | Version 1.0 | Internal Use | Page 9
+                                                                                          ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+9. KB-FIN-003 - Refund request after service failure
+Use when a customer requests a refund following service disruption or dissatisfaction.
+
+    Field                                                                      Value
+
+
+    Article ID                                                                 KB-FIN-003
+
+
+    Audience                                                                   Finance Operations, Customer Support
+
+
+    Severity / Priority                                                        Medium to High
+
+
+    Applies when                                                               Customer requests full or partial refund.
+
+
+    Related articles                                                           KB-FIN-001, KB-FIN-002
+
+
+
+
+Resolution context
+      Symptom: Customer requests full or partial refund.
+      Symptom: Service issue or failed delivery is documented.
+      Likely cause: Service not delivered.
+      Likely cause: Duplicate or erroneous charge.
+      Likely cause: Customer goodwill request within policy.
+
+Prerequisites and guardrails
+      Follow contractual and refund-policy boundaries.
+      Resolver may document evidence but should not approve refunds outside authority.
+
+Resolution procedure
+37.    1. Review ticket history and service-impact evidence.
+38.    2. Identify transaction/reference and payment status.
+39.    3. Determine eligibility under the applicable refund policy.
+40.    4. Obtain required approval when outside resolver authority.
+41.    5. Initiate approved refund workflow.
+42.    6. Record refund amount, reference and communication.
+
+Validation and closure criteria
+      Refund request is approved/rejected with recorded rationale.
+      Financial transaction reference is captured.
+      Customer receives accurate outcome and timeline.
+
+Escalation
+      Escalate exceptions, high-value refunds or policy disputes.
+
+    OPERATOR NOTE
+    Separate service remediation from financial approval; both may be required on the same ticket.
+
+
+
+
+                                                     KB-ESOPS-001 | Version 1.0 | Internal Use | Page 10
+                                                                                                ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+10. KB-TECH-001 - Portal unavailable / broad service outage
+Use when multiple users cannot access the application or a major service is unavailable.
+
+    Field                                                                            Value
+
+
+    Article ID                                                                       KB-TECH-001
+
+
+    Audience                                                                         Site Reliability, Technical Support, Incident Management
+
+
+    Severity / Priority                                                              Critical to High
+
+
+    Applies when                                                                     Multiple users report the same outage.
+
+
+    Related articles                                                                 KB-TECH-002, KB-OPS-003
+
+
+
+
+Resolution context
+      Symptom: Multiple users report the same outage.
+      Symptom: Core application or portal is unavailable.
+      Likely cause: Infrastructure outage.
+      Likely cause: Deployment/configuration regression.
+      Likely cause: Dependency failure.
+      Likely cause: Capacity saturation.
+
+Prerequisites and guardrails
+      Treat widespread impact as a potential incident, not just an individual ticket.
+      Do not repeatedly retry destructive operations.
+      Follow approved incident communication channels.
+
+Resolution procedure
+43.    1. Determine scope: one user, one tenant, multiple tenants or global.
+44.    2. Compare ticket timing and symptoms across related cases.
+45.    3. Check known incidents/platform health where available.
+46.    4. Route to Site Reliability for broad availability failures.
+47.    5. Capture customer business impact for incident prioritization.
+48.    6. Keep the ticket linked to the parent incident when applicable.
+
+Validation and closure criteria
+      Service health is restored or incident owner confirms stabilization.
+      Customer receives accurate status communication.
+      Ticket references the parent incident where applicable.
+
+Escalation
+      Immediate incident escalation for broad/multi-tenant impact.
+      Escalate critical business processes such as payroll or security functions.
+
+    OPERATOR NOTE
+    Avoid treating repeated customer reports as isolated tickets when evidence indicates a shared incident.
+
+
+
+
+                                                      KB-ESOPS-001 | Version 1.0 | Internal Use | Page 11
+                                                                                                  ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+11. KB-TECH-002 - Business-critical integration/API failure
+Use when an integration, API or automation required for business processing is failing.
+
+    Field                                                                             Value
+
+
+    Article ID                                                                        KB-TECH-002
+
+
+    Audience                                                                          Technical Support, Integration Team
+
+
+    Severity / Priority                                                               High to Critical
+
+
+    Applies when                                                                      API requests fail consistently.
+
+
+    Related articles                                                                  KB-TECH-001, KB-OPS-001
+
+
+
+
+Resolution context
+      Symptom: API requests fail consistently.
+      Symptom: Business process is blocked by an integration.
+      Likely cause: Authentication/credential expiry.
+      Likely cause: Schema or contract change.
+      Likely cause: Endpoint availability failure.
+      Likely cause: Rate limit or dependency issue.
+      Likely cause: Application configuration mismatch.
+
+Prerequisites and guardrails
+      Use non-sensitive request/response identifiers.
+      Do not expose production secrets in tickets.
+      Check whether an approved maintenance or change is already in progress.
+
+Resolution procedure
+49.    1. Capture endpoint/service name and approximate failure window.
+50.    2. Determine whether failures are all requests or a subset.
+51.    3. Check response class or error signature if available.
+52.    4. Validate configuration and credentials through approved controls.
+53.    5. Compare the current interface contract against the supported version.
+54.    6. Escalate to the integration/platform owner if the issue is systemic or persists after configuration validation.
+
+Validation and closure criteria
+      Successful request or business transaction completes.
+      No credentials or sensitive payloads were exposed.
+      Customer/business owner confirms recovery.
+
+Escalation
+      Escalate systemic integration defects, repeated 5xx responses or data integrity concerns.
+
+    OPERATOR NOTE
+    The resolver should distinguish an authentication/configuration issue from a service outage before routing to infrastructure.
+
+
+
+
+                                                      KB-ESOPS-001 | Version 1.0 | Internal Use | Page 12
+                                                                                                ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+12. KB-TECH-003 - Connectivity / intermittent access issue
+Use when a user reports intermittent connectivity or access that does not appear to affect all users.
+
+    Field                                                                             Value
+
+
+    Article ID                                                                        KB-TECH-003
+
+
+    Audience                                                                          Technical Support
+
+
+    Severity / Priority                                                               Medium to High
+
+
+    Applies when                                                                      Intermittent access.
+
+
+    Related articles                                                                  KB-TECH-001
+
+
+
+
+Resolution context
+      Symptom: Intermittent access.
+      Symptom: Single user or limited group affected.
+      Likely cause: Local network path.
+      Likely cause: Client/browser cache.
+      Likely cause: VPN/proxy behavior.
+      Likely cause: Endpoint-specific configuration.
+
+Prerequisites and guardrails
+      Avoid requesting sensitive device credentials.
+      Use customer-provided timestamps and safe diagnostic observations.
+
+Resolution procedure
+55.    1. Establish whether the issue follows the user, device or network.
+56.    2. Compare browser/client behavior where appropriate.
+57.    3. Clear safe client state only with customer approval.
+58.    4. Test through an approved alternate network path where practical.
+59.    5. Check whether known incidents exist.
+60.    6. Escalate if multiple users share the same path or if service-side evidence appears.
+
+Validation and closure criteria
+      Stable connectivity is restored or evidence identifies a service-side issue.
+      Resolution steps are documented.
+
+Escalation
+      Escalate shared network/service symptoms to Site Reliability.
+
+    OPERATOR NOTE
+    Avoid excessive local troubleshooting when multiple customers report the same issue.
+
+
+
+
+                                                       KB-ESOPS-001 | Version 1.0 | Internal Use | Page 13
+                                                                                               ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+13. KB-TECH-004 - Payroll or high-impact business process stopped
+Use for complaints where a core business process such as payroll is stopped or materially delayed.
+
+    Field                                                                          Value
+
+
+    Article ID                                                                     KB-TECH-004
+
+
+    Audience                                                                       Technical Support, Site Reliability, Operations Manager
+
+
+    Severity / Priority                                                            Critical
+
+
+    Applies when                                                                   Business-critical processing has stopped.
+
+
+    Related articles                                                               KB-TECH-001, KB-TECH-002
+
+
+
+
+Resolution context
+      Symptom: Business-critical processing has stopped.
+      Symptom: Large employee/customer population affected.
+      Likely cause: Service outage.
+      Likely cause: Integration failure.
+      Likely cause: Data processing job failure.
+      Likely cause: Dependency unavailable.
+
+Prerequisites and guardrails
+      Capture exact business impact and affected volume.
+      Do not manually manipulate financial or payroll records without authorized procedure.
+
+Resolution procedure
+61.    1. Confirm business process, affected population and last successful run.
+62.    2. Determine whether the issue is isolated to a tenant or systemic.
+63.    3. Check parent incident/change status.
+64.    4. Route to the technical owner based on the failure signature.
+65.    5. Record recovery milestones and business-impact updates.
+66.    6. Escalate to Operations Manager for sustained critical impact.
+
+Validation and closure criteria
+      Business process completes successfully or incident owner confirms recovery.
+      Customer/business owner receives a clear recovery statement.
+      Any manual remediation is documented and approved.
+
+Escalation
+      Immediate escalation for large employee/customer impact or prolonged outage.
+
+    OPERATOR NOTE
+    Business impact can justify Critical priority even when the technical symptom looks routine.
+
+
+
+
+                                                     KB-ESOPS-001 | Version 1.0 | Internal Use | Page 14
+                                                                                              ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+14. KB-OPS-001 - Ticket is unassigned / no automatic resolver
+Use when AI classification succeeds but no eligible resolver is available.
+
+    Field                                                                           Value
+
+
+    Article ID                                                                      KB-OPS-001
+
+
+    Audience                                                                        Service Desk, Operations Admin
+
+
+    Severity / Priority                                                             Operational
+
+
+    Applies when                                                                    Ticket is OPEN and unassigned.
+
+
+    Related articles                                                                KB-OPS-002, KB-OPS-003
+
+
+
+
+Resolution context
+      Symptom: Ticket is OPEN and unassigned.
+      Symptom: Assignment analysis reports no eligible resolver.
+      Likely cause: Outside working shift.
+      Likely cause: Resolver at capacity.
+      Likely cause: No qualified skill match.
+      Likely cause: Team taxonomy mismatch.
+      Likely cause: All normal workforce candidates unavailable.
+
+Prerequisites and guardrails
+      Do not bypass the operational team boundary.
+      Use manual assignment only to an active resolver in the correct operational team unless an approved exception exists.
+
+Resolution procedure
+67.    1. Open assignment analysis and review all candidate explanations.
+68.    2. Confirm the operational team resolved from the ticket classification.
+69.    3. Review workforce status, shift, capacity and skill signals.
+70.    4. If an eligible resolver exists, use auto-assignment.
+71.    5. If no automatic candidate exists, use authorized manual assignment.
+72.    6. Record the reason for the override.
+73.    7. If no resolver exists in the team, escalate to workforce/queue administration.
+
+Validation and closure criteria
+      Ticket has an owner.
+      Assignment method and reason are captured.
+      Ticket remains OPEN until the resolver actually starts work.
+
+Escalation
+      Escalate if a required operational team has no active resolver.
+      Escalate critical queue starvation immediately.
+
+    OPERATOR NOTE
+    Automatic routing failure is not a platform failure by itself; it may be the expected result of workforce constraints.
+
+
+
+
+                                                      KB-ESOPS-001 | Version 1.0 | Internal Use | Page 15
+                                                                                              ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+15. KB-OPS-002 - SLA breached / SLA at risk
+Use when a ticket is approaching or has exceeded its response or resolution SLA.
+
+    Field                                                                          Value
+
+
+    Article ID                                                                     KB-OPS-002
+
+
+    Audience                                                                       Service Desk, Resolver, Operations Manager
+
+
+    Severity / Priority                                                            High to Critical
+
+
+    Applies when                                                                   SLA state is AT_RISK or BREACHED.
+
+
+    Related articles                                                               KB-OPS-001, KB-OPS-004
+
+
+
+
+Resolution context
+      Symptom: SLA state is AT_RISK or BREACHED.
+      Symptom: Customer impact may be increasing because of delay.
+      Likely cause: No resolver ownership.
+      Likely cause: High workload on resolver.
+      Likely cause: Customer dependency.
+      Likely cause: Queue starvation.
+      Likely cause: Underlying incident.
+
+Prerequisites and guardrails
+      Use the platform SLA state as the source of truth.
+      Do not reset or manually manipulate SLA deadlines without authorized policy change.
+
+Resolution procedure
+74.    1. Inspect first-response and resolution SLA separately.
+75.    2. Determine whether the ticket is assigned and actively worked.
+76.    3. Identify blocker: resolver capacity, customer response, technical dependency or queue condition.
+77.    4. Escalate according to priority and SLA policy.
+78.    5. Notify customer when an approved service communication is required.
+79.    6. Record the mitigation or escalation.
+
+Validation and closure criteria
+      SLA risk has been reduced or ownership is transferred appropriately.
+      Customer communication is accurate.
+      Escalation and audit records are complete.
+
+Escalation
+      Critical breached tickets require immediate operational attention.
+      Escalate repeated queue-level breaches as a workforce/process problem.
+
+    OPERATOR NOTE
+    SLA breach does not automatically mean the ticket is technically unresolved; it means the defined service commitment was missed.
+
+
+
+
+                                                     KB-ESOPS-001 | Version 1.0 | Internal Use | Page 16
+                                                                                             ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+16. KB-OPS-003 - Ticket wrongly assigned or needs reassignment
+Use when the ticket is assigned to the wrong resolver/team or requires operational rebalancing.
+
+    Field                                                                         Value
+
+
+    Article ID                                                                    KB-OPS-003
+
+
+    Audience                                                                      Operations Admin, Operations Manager
+
+
+    Severity / Priority                                                           Operational
+
+
+    Applies when                                                                  Assigned resolver lacks required skills.
+
+
+    Related articles                                                              KB-OPS-001, KB-AI-001
+
+
+
+
+Resolution context
+      Symptom: Assigned resolver lacks required skills.
+      Symptom: Team assignment is incorrect.
+      Symptom: Resolver is overloaded or unavailable.
+      Likely cause: Classification drift.
+      Likely cause: Legacy team naming.
+      Likely cause: Workforce state changed after assignment.
+      Likely cause: Manual assignment error.
+
+Prerequisites and guardrails
+      Keep the original assignment event in the audit trail.
+      Do not erase assignment history.
+      Use reassignment with a documented operational reason.
+
+Resolution procedure
+80.    1. Open assignment analysis for the ticket.
+81.    2. Compare current resolver skills and workload with the ticket requirement.
+82.    3. Verify the canonical operational team.
+83.    4. Identify the strongest eligible replacement.
+84.    5. Reassign through the approved workflow.
+85.    6. Confirm the new resolver sees the ticket in their queue.
+86.    7. Notify affected parties when notification policy requires it.
+
+Validation and closure criteria
+      New resolver owns the ticket.
+      Audit shows previous and new resolver.
+      No duplicate active work remains.
+
+Escalation
+      Escalate repeated misrouting to routing-model/taxonomy ownership.
+
+    OPERATOR NOTE
+    Do not correct a routing error by weakening team or skill constraints. Fix the routing signal or use a documented manual override.
+
+
+
+
+                                                    KB-ESOPS-001 | Version 1.0 | Internal Use | Page 17
+                                                                                               ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+17. KB-OPS-004 - Escalated ticket requiring operations-manager
+review
+Use when a ticket has reached an escalation condition or repeated SLA breach and requires management attention.
+
+    Field                                                                          Value
+
+
+    Article ID                                                                     KB-OPS-004
+
+
+    Audience                                                                       Operations Manager, Service Desk
+
+
+    Severity / Priority                                                            High to Critical
+
+
+    Applies when                                                                   Escalation level increased.
+
+
+    Related articles                                                               KB-OPS-002, KB-TECH-001, KB-SEC-002
+
+
+
+
+Resolution context
+      Symptom: Escalation level increased.
+      Symptom: Ticket has repeated SLA breaches or major customer impact.
+      Likely cause: SLA breach.
+      Likely cause: Critical priority.
+      Likely cause: High business impact.
+      Likely cause: Resolver or team capacity problem.
+
+Prerequisites and guardrails
+      Review the complete ticket timeline before making an override decision.
+      Maintain customer communication discipline.
+
+Resolution procedure
+87.    1. Review ticket summary, complaint, priority, SLA, assignment and audit history.
+88.    2. Confirm whether the escalation owner is correct.
+89.    3. Decide whether to reassign, increase capacity, engage another team or declare/associate an incident.
+90.    4. Record management decision and owner.
+91.    5. Ensure the resolver and customer receive required notifications.
+92.    6. Continue monitoring until the risk is closed.
+
+Validation and closure criteria
+      Escalation owner is identified.
+      Decision and actions are documented.
+      SLA and customer-impact risk are actively managed.
+
+Escalation
+      Escalate to incident/security/privacy governance when the issue exceeds service-desk authority.
+
+    OPERATOR NOTE
+    Escalation should change the operational response, not merely change a numeric level.
+
+
+
+
+                                                     KB-ESOPS-001 | Version 1.0 | Internal Use | Page 18
+                                                                                                ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+18. KB-AI-001 - Using the AI resolution recommendation safely
+Use when a resolver requests AI-generated investigation and resolution guidance.
+
+    Field                                                                           Value
+
+
+    Article ID                                                                      KB-AI-001
+
+
+    Audience                                                                        Resolver, Operations Manager
+
+
+    Severity / Priority                                                             Assistive / advisory
+
+
+    Applies when                                                                    Ticket is active and requires troubleshooting guidance.
+
+
+    Related articles                                                                KB-AI-002, KB-SEC-001
+
+
+
+
+Resolution context
+      Symptom: Ticket is active and requires troubleshooting guidance.
+      Symptom: Resolver wants a recommended investigation path.
+      Likely cause: Complex or unfamiliar issue.
+      Likely cause: Need to synthesize ticket context and prior cases quickly.
+
+Prerequisites and guardrails
+      AI output is advisory, not proof.
+      Never treat AI output as evidence that a system action succeeded.
+      Use approved system data, KB guidance and historical cases to validate recommendations.
+
+Resolution procedure
+93.    1. Review ticket context before generating the recommendation.
+94.    2. Generate the AI recommendation.
+95.    3. Compare the recommendation with approved KB/SOP procedures.
+96.    4. Check similar resolved cases for precedent and differences.
+97.    5. Execute only approved actions.
+98.    6. Record material remediation in the ticket.
+99.    7. Re-run or refine the recommendation only when new evidence changes the diagnosis.
+
+Validation and closure criteria
+      Resolver validates the recommendation against real system evidence.
+      Resolution steps are documented.
+      Customer response does not contain unverified technical claims.
+
+Escalation
+      Escalate when AI advice conflicts with policy, evidence or security controls.
+      Escalate high-risk actions rather than treating AI confidence as authorization.
+
+    OPERATOR NOTE
+    AI should narrow investigation effort, not replace operational accountability.
+
+
+
+
+                                                     KB-ESOPS-001 | Version 1.0 | Internal Use | Page 19
+                                                                                                 ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+19. KB-AI-002 - Using similar resolved tickets as precedent
+Use when the resolver wants historical examples before deciding how to resolve a current complaint.
+
+    Field                                                                            Value
+
+
+    Article ID                                                                       KB-AI-002
+
+
+    Audience                                                                         Resolver, Service Desk
+
+
+    Severity / Priority                                                              Assistive / advisory
+
+
+    Applies when                                                                     The platform returns one or more similar RESOLVED/CLOSED cases.
+
+
+    Related articles                                                                 KB-AI-001, KB-OPS-003
+
+
+
+
+Resolution context
+      Symptom: The platform returns one or more similar RESOLVED/CLOSED cases.
+      Likely cause: Repeated complaint pattern.
+      Likely cause: Known operational symptom.
+      Likely cause: Need for prior successful remediation pattern.
+
+Prerequisites and guardrails
+      Similarity is evidence for consideration, not a guarantee that two incidents have the same root cause.
+      Compare customer context, environment, version, timing and business impact.
+
+Resolution procedure
+100. 1. Review the top similar cases.
+101. 2. Compare symptom and category alignment.
+102. 3. Identify the resolution pattern that was successful.
+103. 4. Check whether the original conditions are still valid.
+104. 5. Reuse safe troubleshooting steps when applicable.
+105. 6. Document deviations when the current ticket differs from precedent.
+
+Validation and closure criteria
+      Chosen remediation is validated against current evidence.
+      Historical precedent is referenced where useful.
+
+Escalation
+      Escalate if historical precedent conflicts with current platform behavior or security policy.
+
+    OPERATOR NOTE
+    Prefer approved historical patterns over generic internet advice, but do not blindly replay old actions.
+
+
+
+
+                                                      KB-ESOPS-001 | Version 1.0 | Internal Use | Page 20
+                                                                                                 ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+20. Operational Playbook - Assignment Troubleshooting Matrix
+    Observed condition                      Automatic routing outcome                Admin action                             What not to do
+
+
+    No eligible resolver                    Ticket remains OPEN/unassigned           Review assignment analysis; assign       Do not weaken team boundary
+                                                                                     manually if policy allows                globally
+
+
+    Correct team, wrong skills              Candidate filtered or scored low         Select a qualified resolver or correct   Do not assign unrelated specialist
+                                                                                     taxonomy                                 just to clear queue
+
+
+    Resolver at capacity                    Automatic candidate rejected or          Rebalance workload or use                Do not silently exceed capacity
+                                            penalized                                documented override
+
+
+    Outside working shift                   Normal routing rejects candidate         Use eligible resolver or approved on-    Do not assume AVAILABLE means
+                                                                                     call path                                currently on shift
+
+
+    Critical + no normal resolver           On-call fallback may engage              Review emergency coverage and            Do not treat on-call as normal queue
+                                                                                     escalation
+
+
+    Legacy team label                       Canonical team mapping resolves it       Confirm operational team before          Do not create duplicate teams for
+                                                                                     manual assignment                        spelling variants
+
+
+
+
+20.1 Workforce interpretation
+       AVAILABLE is a status; it does not necessarily mean the resolver is in an active shift.
+       eligible_for_assignment is the final workforce decision for automatic routing.
+       capacity_available and utilization must be interpreted together with active-ticket count.
+       effective workload may be higher than raw ticket count because priority weighting is part of routing intelligence.
+
+    OPERATIONAL PATTERN
+    When automatic routing skips a ticket, the administrator should be told the specific constraint, not only the phrase “No eligible resolver.” The
+    message should identify team, workforce and capacity causes so manual action is explainable.
+
+
+
+
+                                                      KB-ESOPS-001 | Version 1.0 | Internal Use | Page 21
+                                                                                              ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+21. Operational Playbook - SLA and Escalation
+    Situation                              Immediate action                        Escalation path                     Evidence to record
+
+
+    Critical ticket created                Confirm team and resolver;              Operations Manager / incident       Assignment reason, SLA state
+                                           monitor first-response SLA              owner when required
+
+
+    SLA at risk                            Identify blocker; increase              Team lead / operations manager      Blocker, mitigation, owner
+                                           attention or rebalance
+
+
+    Resolution SLA breached                Confirm active ownership and            Operations Manager when             Breach state, cause, action
+                                           customer communication                  material
+
+
+    Repeated breaches in one queue         Treat as systemic                       Workforce + operations leadership   Queue trend, capacity, staffing
+                                           workforce/process issue
+
+
+    Security/privacy impact                Contain and preserve evidence           Cyber Security / Privacy            Incident reference, evidence scope
+
+
+    Customer dependency                    Move to PENDING_CUSTOMER                Follow up per communication         Question asked and required
+                                           when appropriate                        policy                              customer action
+
+
+
+
+21.1 SLA handling rules
+       Use the platform SLA state rather than local wall-clock calculations.
+       Separate first-response SLA from resolution SLA; one may breach while the other remains healthy.
+       SLA pause state must be visible in the audit trail where the process permits pausing.
+       A resolved ticket should stop active resolution timing according to the platform lifecycle rules.
+
+    SLA PRINCIPLE
+    The SLA engine is a control mechanism, not merely a countdown display. It should drive prioritization, assignment attention, escalation and
+    operational reporting.
+
+
+
+
+                                                     KB-ESOPS-001 | Version 1.0 | Internal Use | Page 22
+                                                                                       ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+22. Resolver Checklist - Before You Resolve
+106. Confirm the requested outcome is understood and matches the complaint.
+107. Review AI recommendation and similar resolved cases only as supporting context.
+108. Confirm the actual technical/business state using approved evidence.
+109. Verify customer impact is addressed.
+110. Record the material resolution steps taken.
+111. Confirm no related security, privacy, financial or incident-management obligation remains open.
+112. Move to RESOLVED only when the resolver has completed the work and the evidence supports the outcome.
+113. Provide a concise customer-facing resolution statement.
+
+22.1 Quality checklist
+ Check                                                                      Pass condition
+
+
+ Identity / customer context                                                Customer identity and account context are correctly associated
+
+
+ Root cause                                                                 Root cause or most supported explanation is documented
+
+
+ Action                                                                     Actual action performed is recorded
+
+
+ Validation                                                                 Successful outcome is verified
+
+
+ SLA                                                                        SLA state and any breach reason are understood
+
+
+ Security / privacy                                                         No unresolved security/privacy concern remains
+
+
+ Communication                                                              Customer has a clear outcome and next step if any
+
+
+ Audit                                                                      Material assignment, status, escalation and comment events exist
+
+
+
+
+ RESOLVE VS. CLOSE
+ RESOLVED means the resolver has completed the service work. CLOSED is the administrative end state. Do not use closure to hide an unresolved
+ technical condition.
+
+
+
+
+                                                KB-ESOPS-001 | Version 1.0 | Internal Use | Page 23
+                                                                                                     ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+23. Knowledge Base Governance and Article Quality
+23.1 Article lifecycle
+    Stage                                                 Owner                                                Output
+
+
+    Draft                                                 Resolver subject-matter owner                        Article created with evidence and safe
+                                                                                                               procedure
+
+
+    Review                                                Operations + technical SME                           Technical accuracy, scope and escalation
+                                                                                                               validated
+
+
+    Approve                                               Knowledge owner / delegated authority                Article becomes controlled
+
+
+    Publish                                               Platform administrator                               Searchable and versioned article available
+
+
+    Measure                                               Knowledge owner                                      Usage, helpfulness and resolution outcomes
+                                                                                                               reviewed
+
+
+    Retire                                                Knowledge owner                                      Superseded article removed from active
+                                                                                                               retrieval
+
+
+
+
+23.2 Article quality gates
+      Every article must have a stable ID and owner.
+      Steps must be actionable and sequenced.
+      Every article must state when to stop and escalate.
+      Sensitive data handling rules must be explicit for security, identity and finance articles.
+      Validation criteria must be measurable or observable.
+      Related articles should connect common incident chains.
+      Major product/process changes should trigger article review.
+
+23.3 AI retrieval readiness
+For future retrieval-augmented generation or GraphRAG use, preserve entities and relationships explicitly: product area, category,
+subcategory, team, resolver role, symptom, cause, procedure, validation, escalation owner and related articles. This allows the platform to
+retrieve a precise operational path rather than a generic troubleshooting paragraph.
+
+    DESIGN RULE
+    The KB should be the approved procedural source. Historical tickets are evidence of what happened; KB articles are the controlled source of what
+    should be done.
+
+
+
+
+                                                      KB-ESOPS-001 | Version 1.0 | Internal Use | Page 24
+                                                                                                 ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+24. Search and Retrieval Design Reference
+24.1 Recommended query sequence
+114. Retrieve by ticket category and subcategory.
+115. Filter by resolver role and applicable system domain.
+116. Rank by symptom/complaint similarity.
+117. Prefer current-version articles.
+118. Retrieve similar RESOLVED/CLOSED tickets as evidence.
+119. Present AI guidance with source references in the resolver experience.
+
+24.2 Suggested metadata dictionary
+    Field                                                 Purpose                                                Example
+
+
+    article_id                                            Stable knowledge identifier                            KB-SEC-001
+
+
+    domain                                                High-level operational domain                          Security & Privacy
+
+
+    category                                              Ticket/incident category                               Security
+
+
+    subcategory                                           Specific issue pattern                                 Account Compromise
+
+
+    symptom                                               Observable issue                                       Suspicious login alerts
+
+
+    priority                                              Expected urgency                                       Critical
+
+
+    audience                                              Allowed resolver roles                                 Cyber Security
+
+
+    keywords                                              Retrieval terms                                        credential, suspicious login
+
+
+    procedure                                             Approved resolution steps                              Ordered procedural text
+
+
+    validation                                            Completion criteria                                    Sessions contained; reset completed
+
+
+    escalation                                            Stop conditions and owner                              Cyber Security incident process
+
+
+    related_articles                                      Graph/relationship links                               KB-FIN-001, KB-SEC-002
+
+
+
+
+24.3 Why this structure matters
+       It supports lexical and semantic retrieval.
+       It reduces hallucination risk by constraining the AI to controlled procedures.
+       It enables graph relationships between incidents, teams, SLAs and remediation patterns.
+       It makes KB analytics possible: which articles resolve tickets, which articles are stale and which topics generate repeated escalations.
+
+
+
+
+                                                       KB-ESOPS-001 | Version 1.0 | Internal Use | Page 25
+                                                                                    ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+25. Appendix A - Common Diagnostic Questions
+Issue family                                                             Questions to ask first
+
+
+Account access                                                           What exact error? When did it start? One user or many? Any recent
+                                                                         password/security change?
+
+
+Security                                                                 What alert occurred? When? Is the account still accessible? Any
+                                                                         unauthorized transaction or data exposure?
+
+
+Billing                                                                  What transaction/reference? Amount/date/currency? Pending or
+                                                                         settled? Duplicate or unexpected?
+
+
+Subscription                                                             Was payment confirmed? What plan? What account? Is entitlement
+                                                                         absent or inactive?
+
+
+Outage                                                                   How many users/tenants affected? What was the last successful
+                                                                         operation? Any known incident?
+
+
+Integration/API                                                          Endpoint/service? Failure time? Error class/signature? All requests or
+                                                                         subset? Recent change?
+
+
+SLA                                                                      Which SLA? First response or resolution? What is blocking progress? Is
+                                                                         a resolver assigned?
+
+
+Routing                                                                  What team did AI select? Are there eligible resolvers? Is the ticket
+                                                                         legacy-labeled? Is manual assignment required?
+
+
+
+
+DO NOT ASK FOR
+Passwords, MFA codes, private recovery secrets, full payment card numbers or unrelated personal data. Use approved verification and evidence-
+handling procedures.
+
+
+
+
+                                             KB-ESOPS-001 | Version 1.0 | Internal Use | Page 26
+                                                                                         ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+26. Appendix B - Quick Reference: Enterprise Resolution Flow
+Use this one-page flow when a resolver needs a fast decision path without reading a full article.
+
+ Step                                               Decision                                           Action
+
+
+ 1. Intake                                          What is the user actually experiencing?            Read complaint, category, subcategory and
+                                                                                                       business impact.
+
+
+ 2. Priority                                        How urgent is the impact?                          Use platform priority; verify customer-
+                                                                                                       requested priority does not override evidence-
+                                                                                                       based risk.
+
+
+ 3. Team                                            Who should own this domain?                        Use canonical operational team.
+
+
+ 4. Resolver                                        Who should work it?                                Use workforce-aware assignment; review
+                                                                                                       skills, workload, capacity and SLA health.
+
+
+ 5. Diagnose                                        What is the most likely cause?                     Use approved KB + similar resolved tickets +
+                                                                                                       AI recommendation.
+
+
+ 6. Act                                             What approved step changes the condition?          Execute only documented and authorized
+                                                                                                       actions.
+
+
+ 7. Validate                                        Did the condition actually change?                 Confirm through system evidence or customer
+                                                                                                       confirmation.
+
+
+ 8. Communicate                                     What does the customer need to know?               State outcome, limitations and next steps.
+
+
+ 9. Resolve                                         Is service work complete?                          Move to RESOLVED only after evidence
+                                                                                                       supports closure.
+
+
+ 10. Close                                          Has administrative closure criteria been met?      Close after required confirmations and audit
+                                                                                                       records.
+
+
+
+
+ FINAL CONTROL
+ When the correct action is uncertain, stop at diagnosis and escalate. A controlled delay is safer than an unverified remediation.
+
+
+
+
+                                                KB-ESOPS-001 | Version 1.0 | Internal Use | Page 27
+                                                                     ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+
+27. Appendix C - Article Index
+Article ID        Title                                  Severity                                Audience
+
+
+KB-ACC-001        Account locked / unable to sign in     ['Customer reports locked account       ['Account lockout policy triggered.',
+                                                         or repeated login rejection.', 'No      'Incorrect credentials or stale
+                                                         evidence yet of malicious account       browser/session state.', 'Identity
+                                                         takeover.']                             synchronization or authentication
+                                                                                                 service issue.']
+
+
+KB-ACC-002        Password reset email not received      ['Customer can access email but no      ['Mailbox filtering or spam
+                                                         reset message is received.', 'Reset     quarantine.', 'Email delivery delay.',
+                                                         request may succeed in the              'Incorrect customer email or stale
+                                                         application but email is absent.']      identity record.', 'Notification
+                                                                                                 provider outage.']
+
+
+KB-SEC-001        Suspicious login alert / suspected     ['Unexpected login from an              ['Credential theft.', 'Session/token
+                  credential compromise                  unfamiliar location.', 'Customer        compromise.', 'Compromised
+                                                         believes credentials were               endpoint or browser.']
+                                                         compromised.']
+
+
+KB-SEC-002        Customer sees another customer's       ['Customer can view another             ['Authorization policy defect.',
+                  personal information                   user/customer record.', 'Screenshot     'Tenant/row-level data isolation
+                                                         or evidence indicates unauthorized      failure.', 'Cache or session
+                                                         data access.']                          contamination.', 'Configuration or
+                                                                                                 deployment regression.']
+
+
+KB-FIN-001        Duplicate charge / duplicate           ['Two or more transactions appear       ['Duplicate submission.', 'Payment
+                  payment                                to represent the same intended          retry after timeout.', 'Gateway
+                                                         purchase.', 'Customer requests          duplication.', 'Delayed
+                                                         reversal or refund.']                   authorization/capture creating
+                                                                                                 apparent duplicates.']
+
+
+KB-FIN-002        Subscription paid but service not      ['Payment is confirmed but expected     ['Entitlement provisioning delay.',
+                  activated                              service remains unavailable.',          'Payment-to-subscription
+                                                         'Customer has a valid                   synchronization failure.', 'Incorrect
+                                                         order/subscription reference.']         account mapping.', 'Activation job
+                                                                                                 failure.']
+
+
+KB-FIN-003        Refund request after service failure   ['Customer requests full or partial     ['Service not delivered.', 'Duplicate
+                                                         refund.', 'Service issue or failed      or erroneous charge.', 'Customer
+                                                         delivery is documented.']               goodwill request within policy.']
+
+
+KB-TECH-001       Portal unavailable / broad service     ['Multiple users report the same        ['Infrastructure outage.',
+                  outage                                 outage.', 'Core application or portal   'Deployment/configuration
+                                                         is unavailable.']                       regression.', 'Dependency failure.',
+                                                                                                 'Capacity saturation.']
+
+
+KB-TECH-002       Business-critical integration/API      ['API requests fail consistently.',     ['Authentication/credential expiry.',
+                  failure                                'Business process is blocked by an      'Schema or contract change.',
+                                                         integration.']                          'Endpoint availability failure.', 'Rate
+                                                                                                 limit or dependency issue.',
+                                                                                                 'Application configuration
+                                                                                                 mismatch.']
+
+
+KB-TECH-003       Connectivity / intermittent access     ['Intermittent access.', 'Single user   ['Local network path.',
+
+
+                           KB-ESOPS-001 | Version 1.0 | Internal Use | Page 28
+                                                                                         ENTERPRISE SUPPORT OPERATIONS | KNOWLEDGE BASE
+
+ Article ID                           Title                                  Severity                                  Audience
+
+
+                                      issue                                  or limited group affected.']              'Client/browser cache.', 'VPN/proxy
+                                                                                                                       behavior.', 'Endpoint-specific
+                                                                                                                       configuration.']
+
+
+ KB-TECH-004                          Payroll or high-impact business        ['Business-critical processing has        ['Service outage.', 'Integration
+                                      process stopped                        stopped.', 'Large employee/customer       failure.', 'Data processing job
+                                                                             population affected.']                    failure.', 'Dependency unavailable.']
+
+
+ KB-OPS-001                           Ticket is unassigned / no automatic    ['Ticket is OPEN and unassigned.',        ['Outside working shift.', 'Resolver at
+                                      resolver                               'Assignment analysis reports no           capacity.', 'No qualified skill match.',
+                                                                             eligible resolver.']                      'Team taxonomy mismatch.', 'All
+                                                                                                                       normal workforce candidates
+                                                                                                                       unavailable.']
+
+
+ KB-OPS-002                           SLA breached / SLA at risk             ['SLA state is AT_RISK or                 ['No resolver ownership.', 'High
+                                                                             BREACHED.', 'Customer impact may          workload on resolver.', 'Customer
+                                                                             be increasing because of delay.']         dependency.', 'Queue starvation.',
+                                                                                                                       'Underlying incident.']
+
+
+ KB-OPS-003                           Ticket wrongly assigned or needs       ['Assigned resolver lacks required        ['Classification drift.', 'Legacy team
+                                      reassignment                           skills.', 'Team assignment is             naming.', 'Workforce state changed
+                                                                             incorrect.', 'Resolver is overloaded or   after assignment.', 'Manual
+                                                                             unavailable.']                            assignment error.']
+
+
+ KB-OPS-004                           Escalated ticket requiring             ['Escalation level increased.', 'Ticket   ['SLA breach.', 'Critical priority.',
+                                      operations-manager review              has repeated SLA breaches or major        'High business impact.', 'Resolver or
+                                                                             customer impact.']                        team capacity problem.']
+
+
+ KB-AI-001                            Using the AI resolution                ['Ticket is active and requires           ['Complex or unfamiliar issue.',
+                                      recommendation safely                  troubleshooting guidance.', 'Resolver     'Need to synthesize ticket context
+                                                                             wants a recommended investigation         and prior cases quickly.']
+                                                                             path.']
+
+
+ KB-AI-002                            Using similar resolved tickets as      ['The platform returns one or more        ['Repeated complaint pattern.',
+                                      precedent                              similar RESOLVED/CLOSED cases.']          'Known operational symptom.',
+                                                                                                                       'Need for prior successful
+                                                                                                                       remediation pattern.']
+
+
+
+
+This index is intentionally suitable for later migration into a knowledge-base table or API. Each article can become a record with content
+chunks plus metadata while retaining the stable Article ID.
+
+ IMPLEMENTATION NOTE
+ For the complaint-routing platform, the next logical ingestion target is a structured KB service with article CRUD, semantic search, versioning, and
+ retrieval hooks for the resolver AI assistant. The controlled DOCX/PDF remains the human-readable master document.
+
+
+
+
+                                                KB-ESOPS-001 | Version 1.0 | Internal Use | Page 29
+

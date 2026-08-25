@@ -1,0 +1,482 @@
+                                                                    ENTERPRISE SUPPORT OPERATIONS | CONTROLLED DOCUMENT
+                                       STANDARD OPERATING PROCEDURE
+
+           Enterprise Complaint Routing &
+                     Resolution
+   AI-assisted intake, workforce-aware assignment, SLA control and resolver execution
+
+
+Document ID                                                        SOP-ESOPS-001
+
+Version                                                            1.0
+
+Document Owner                                                     Enterprise Support Operations
+
+Classification                                                     Internal Use / Controlled
+
+Effective Date                                                     25 August 2026
+
+
+
+CONTROL NOTICE
+This sample is designed as a corporate SOP template for an enterprise complaint-routing platform. Operational values, approval
+authorities and escalation contacts must be validated before production use.
+
+
+
+
+    Prepared for: Service Desk, Support Operations, Resolver Teams, Incident Management and Platform Administration
+
+
+
+
+                                        SOP-ESOPS-001 | Version 1.0 | Internal Use | Page 1
+                                                                       ENTERPRISE SUPPORT OPERATIONS | CONTROLLED DOCUMENT
+
+1. Document Control and Governance
+This procedure defines the controlled operating model for receiving, classifying, prioritizing, routing, assigning, resolving and
+closing customer complaints through the Enterprise Complaint Routing platform. It is intended for operational use by customer
+support, service desk, resolver teams, operations managers and platform administrators.
+
+1.1 Approval and Review
+    Control                                                           Requirement
+
+
+    Owner                                                             Enterprise Support Operations
+
+
+    Approver                                                          Head of Service Operations or delegated authority
+
+
+    Review cycle                                                      At least annually and after material process, SLA, routing or regulatory
+                                                                      changes
+
+
+    Change trigger                                                    New resolver teams, SLA policy changes, routing-model changes, major
+                                                                      incidents or audit findings
+
+
+    Record retention                                                  Ticket history, assignment decisions, status transitions and audit records
+                                                                      retained per enterprise retention policy
+
+
+
+
+1.2 Roles and Accountability
+    Role                                                              Primary accountability
+
+
+    Customer                                                          Submit accurate information, provide requested evidence and respond to
+                                                                      resolver questions.
+
+
+    Service Desk / Intake                                             Validate intake, monitor queues and ensure unassigned work is acted
+                                                                      upon.
+
+
+    Resolver                                                          Investigate, communicate, update status, document actions and resolve
+                                                                      tickets.
+
+
+    Operations Admin                                                  Override assignment when necessary, manage workforce capacity and
+                                                                      monitor operational risk.
+
+
+    Operations Manager                                                Own escalations, approve exceptional routing or capacity decisions and
+                                                                      review SLA breaches.
+
+
+    Platform Administrator                                            Maintain configuration, access, integrations, knowledge assets and system
+                                                                      availability.
+
+
+
+
+1.3 Procedure Map
+      Intake → AI analysis → priority determination → SLA calculation → team routing → resolver selection → execution → verification →
+       resolution → closure.
+      Automatic assignment is the default path. Manual assignment is an authorized operational override when no eligible resolver is
+       available or urgent intervention is required.
+      IN_PROGRESS requires an assigned resolver. Assignment alone does not mean work has started.
+    OPERATING PRINCIPLE
+    The platform provides recommendations; the accountable operator remains responsible for the final operational decision in
+    exceptions, high-impact cases and manual overrides.
+
+
+
+
+                                           SOP-ESOPS-001 | Version 1.0 | Internal Use | Page 2
+                                                                            ENTERPRISE SUPPORT OPERATIONS | CONTROLLED DOCUMENT
+
+2. Intake and AI Triage Procedure
+2.1 Intake Requirements
+Every complaint must contain enough information to identify the customer, understand the requested outcome and determine
+operational impact. The intake interface may use free-text description plus optional customer-provided priority. The platform
+then performs structured analysis.
+ Required element                               Expected handling                                   Operator action if missing
+
+
+ Customer identity                              Match request to known customer/user identity       Do not expose internal ticket details until
+                                                where supported.                                    identity is verified.
+
+
+ Complaint description                          Capture the event, symptom, time, affected          Request clarification if the issue cannot be
+                                                service and desired outcome.                        operationally understood.
+
+
+ Business impact                                Identify affected users, transactions, payroll,     Raise priority for material business impact
+                                                revenue, security or availability impact.           using the priority policy.
+
+
+ Evidence                                       Capture screenshots, logs, invoices or other        Request evidence before performing invasive or
+                                                relevant files when applicable.                     irreversible remediation.
+
+
+
+
+2.2 AI Analysis
+1.   Classify the ticket into category and subcategory.
+2.   Extract customer intent, sentiment, emotion, business impact and operational keywords.
+3.   Determine an AI priority score and recommended priority level.
+4.   Calculate the SLA applicable to the final priority level and customer/service policy.
+5.   Resolve the complaint to an operational team using the canonical team taxonomy.
+6.   Evaluate the resolver workforce and assign the highest-scoring eligible resolver when possible.
+
+ PRIORITY CONTROL
+ Customer-selected priority is a signal, not an authorization to bypass policy. The final priority may be increased when security,
+ business impact, customer tier, urgency or other approved signals indicate greater operational risk.
+
+
+
+2.3 Triage Decision Matrix
+ Priority                                       Typical conditions                                  Operational target
+
+
+ Critical                                       Security compromise, major outage, material         Immediate operational ownership; use on-call
+                                                payroll/revenue impact, severe data exposure.       coverage where normal workforce is
+                                                                                                    unavailable; active escalation monitoring.
+
+
+ High                                           Significant business disruption, repeated service   Prompt assignment; monitor SLA exposure and
+                                                failure, substantial user impact or urgent          workload concentration.
+                                                deadline.
+
+
+ Medium                                         Meaningful issue with workaround or limited         Normal queue assignment within standard SLA.
+                                                business impact.
+
+
+ Low                                            Information request, minor defect, feedback or      Standard queue handling and normal
+                                                low-impact issue.                                   prioritization.
+
+
+
+
+                                           SOP-ESOPS-001 | Version 1.0 | Internal Use | Page 3
+                                                                             ENTERPRISE SUPPORT OPERATIONS | CONTROLLED DOCUMENT
+
+3. Team Routing and Resolver Assignment
+3.1 Canonical Team Routing
+The platform must route tickets against canonical operational teams rather than relying on free-text labels. Legacy or business-
+facing names are normalized before workforce matching. Examples include Finance Team → Finance Operations and General
+Support → the appropriate operational team based on ticket content.
+ Stage                                          Control                                               Decision
+
+
+ 1. Team resolution                             Normalize ticket team label and                       Canonical operational team selected.
+                                                category/subcategory signals.
+
+
+ 2. Workforce filter                            Check active status, assignment eligibility, shift,   Ineligible resolvers excluded from automatic
+                                                availability and capacity.                            routing.
+
+
+ 3. Skill fit                                   Compare required issue signals to resolver skill      Candidate score calculated only after hard
+                                                profile.                                              eligibility checks.
+
+
+ 4. Workload health                             Consider open tickets, effective workload and         Lower-load resolvers receive an advantage.
+                                                utilization.
+
+
+ 5. Priority load                               Consider concentration of Critical/High work          Avoid overloading the same resolver with
+                                                already owned by the resolver.                        urgent work.
+
+
+ 6. Experience                                  Apply normalized experience score.                    Higher experience supports complex/high-risk
+                                                                                                      cases without overriding hard rules.
+
+
+ 7. SLA exposure                                Consider current breached or at-risk work.            Avoid assigning new urgent work to heavily
+                                                                                                      SLA-exposed resolvers where alternatives exist.
+
+
+
+
+3.2 Automatic Assignment
+7. The assignment engine evaluates normal-workforce candidates in the ticket’s operational team.
+8. The engine selects the highest-scoring eligible resolver and stores the assignment score and explanation.
+9. The ticket remains OPEN after assignment until the resolver explicitly starts work.
+10. The system creates an assignment event and notifies the customer and resolver according to the notification policy.
+3.3 Manual Assignment
+When automatic assignment returns no eligible resolver, the ticket remains visible in the unassigned queue. An authorized
+administrator may manually assign the ticket to an active resolver in the correct operational team. Manual assignment may
+override capacity restrictions, but the interface must display an explicit capacity-override warning and record the decision in
+the audit trail.
+
+ NO SILENT FAILURE
+ A bulk assignment operation must return an actionable reason for every skipped ticket, including the resolved operational team and
+ whether the constraint was workforce availability, capacity, skill fit, or another policy rule.
+
+
+
+
+                                           SOP-ESOPS-001 | Version 1.0 | Internal Use | Page 4
+                                                                       ENTERPRISE SUPPORT OPERATIONS | CONTROLLED DOCUMENT
+
+4. Resolver Work Procedure
+4.1 Queue Review
+Resolvers must begin each work period by reviewing their queue, current SLA exposure and workload. Tickets should be
+worked in order of operational risk, considering SLA breach/at-risk state, priority and business impact rather than creation
+time alone.
+ Action                                      Procedure                                          Evidence
+
+
+ Open ticket                                 Review customer statement, category, priority,     Ticket detail view accessed.
+                                             team, assignment and SLA.
+
+
+ Assess                                      Confirm symptoms, scope and impact. Review         Investigation notes / audit event.
+                                             prior history, comments, attachments and
+                                             similar resolved cases.
+
+
+ Start work                                  Move OPEN → IN_PROGRESS only when actively         Status-change event.
+                                             working the case.
+
+
+ Investigate                                 Follow approved knowledge/SOP steps. Avoid         Internal notes, evidence, diagnostic results.
+                                             unsupported changes to production systems.
+
+
+ Request customer input                      Use PENDING_CUSTOMER when progress is              Customer-facing comment and status-change
+                                             blocked by customer information or action.         event.
+
+
+ Resume                                      Return PENDING_CUSTOMER → IN_PROGRESS              Status-change event and customer evidence.
+                                             when required information is received.
+
+
+ Resolve                                     Document the resolution, verification result and   Resolution notes, resolution timestamp,
+                                             customer outcome.                                  evidence.
+
+
+
+
+4.2 AI Resolution Assistant
+For suitable tickets, the resolver may request an AI-generated resolution recommendation. The assistant should use the ticket
+context, approved knowledge sources and historical cases where available. AI guidance is advisory and must be validated by
+the resolver before execution.
+ Use the recommendation as an investigation aid, not as an authorization to alter production systems.
+ Prefer approved knowledge-base procedures and known successful historical resolutions.
+ Do not represent an AI suggestion as an observed fact or confirmed remediation.
+ Escalate when the recommendation indicates security, data-loss, major outage or other high-risk intervention.
+4.3 Similar Resolved Cases
+Before performing novel troubleshooting, review similar tickets that were successfully resolved. Historical cases should be used
+to understand proven diagnostic paths, known symptoms, effective remediation and lessons learned. Similarity is evidence for
+investigation, not proof that the same cause exists.
+
+ RESOLVER STANDARD
+ Every resolved ticket should leave enough structured and narrative evidence that another resolver can understand the issue,
+ reproduce the investigation path and recognize why the resolution was considered successful.
+
+
+
+
+                                        SOP-ESOPS-001 | Version 1.0 | Internal Use | Page 5
+                                                                        ENTERPRISE SUPPORT OPERATIONS | CONTROLLED DOCUMENT
+
+5. SLA Monitoring and Escalation
+5.1 SLA Control
+SLA commitments are driven by the final priority and applicable business calendar. The platform tracks first-response and
+resolution commitments, including pause/resume behavior where policy permits. The same SLA service must be used by the
+dashboard, ticket detail, resolver queue and escalation process so that displayed states remain consistent.
+ State                                        Meaning                                        Required response
+
+
+ ON_TRACK                                     Sufficient time remains against the current    Continue normal execution while monitoring
+                                              commitment.                                    queue risk.
+
+
+ AT_RISK                                      The ticket is approaching the SLA threshold.   Prioritize work, re-evaluate workload and
+                                                                                             consider escalation.
+
+
+ BREACHED                                     The committed deadline has passed.             Immediate operational attention; escalate
+                                                                                             according to priority and ownership policy.
+
+
+ NO_SLA                                       No applicable SLA was established.             Follow service-specific exception handling and
+                                                                                             confirm configuration.
+
+
+
+
+5.2 Escalation Triggers
+ Critical priority requiring elevated operational attention.
+ First-response SLA breach.
+ Resolution SLA breach.
+ Repeated rework or customer dissatisfaction indicating a service-management concern.
+ Security, privacy, financial or regulatory exposure beyond the resolver’s authority.
+ Capacity or workforce conditions that prevent timely completion.
+5.3 Escalation Procedure
+11. Confirm the trigger and capture the factual reason.
+12. Set the appropriate escalation level and operational owner.
+13. Notify the resolver, customer when appropriate, and designated operations owner.
+14. Continue ticket execution unless ownership is formally transferred.
+15. Record escalation decision, reason, time and outcome in the audit trail.
+ ESCALATION DISCIPLINE
+ Escalation is not a substitute for ownership. The ticket must always have a clear current owner or an explicit queue state with a
+ named operational function responsible for the next action.
+
+
+
+
+                                          SOP-ESOPS-001 | Version 1.0 | Internal Use | Page 6
+                                                                      ENTERPRISE SUPPORT OPERATIONS | CONTROLLED DOCUMENT
+
+6. Communications, Notifications and Audit
+6.1 Notification Policy
+Notifications should inform the recipient when a meaningful operational event affects their next action, ownership,
+commitment or customer experience. Notifications must be generated from authoritative backend events rather than frontend-
+only messages.
+ Event                             Customer                          Resolver                          Admin / Operations
+
+
+ Ticket assigned                   Yes                               Yes                               Operational view
+
+
+ Ticket reassigned                 Yes                               New + previous resolver where     Yes
+                                                                     applicable
+
+
+ Status changed                    Yes                               Yes                               Operational view
+
+
+ Priority changed                  Yes                               Yes                               Yes
+
+
+ SLA at risk / breached            Policy-dependent                  Yes                               Yes
+
+
+ Escalation                        Policy-dependent                  Yes                               Yes
+
+
+ Customer comment / evidence       Yes / acknowledgement             Yes                               Operational view
+ added
+
+
+ Resolution / closure              Yes                               Yes                               Yes
+
+
+
+
+6.2 Audit Trail Requirements
+Audit data should answer four questions for every material action: who performed it, what changed, when it changed, and
+why. The ticket timeline should provide an operator-friendly representation; the underlying audit log should preserve
+structured event data for investigation and compliance.
+ Assignment events must preserve previous and new resolver where applicable.
+ Manual overrides must identify the actor and justification.
+ Priority changes must preserve the previous and new priority and the actor type (customer, resolver or admin).
+ Status changes must preserve the state transition and timestamp.
+ Escalations must preserve level, owner, reason and time.
+6.3 Customer Communication Standard
+Customer-facing messages must be concise, factual and action-oriented. They should explain what the support organization has
+done, what is needed from the customer, and what happens next. Avoid exposing internal scoring, resolver workload, internal
+notes, security controls or other confidential operational information.
+
+ QUALITY CHECK
+ Before closing a ticket, confirm that the customer-facing explanation matches the actual recorded resolution and that no internal-
+ only information has been placed in a public comment.
+
+
+
+
+                                         SOP-ESOPS-001 | Version 1.0 | Internal Use | Page 7
+                                                                        ENTERPRISE SUPPORT OPERATIONS | CONTROLLED DOCUMENT
+
+7. Exceptions, Operational Metrics and Continuous Improvement
+7.1 Exception Handling
+ Scenario                                                            Required action
+
+
+ No eligible resolver                                                Keep the ticket OPEN and unassigned; surface the exact routing
+                                                                     constraint; place in operational queue; allow authorized manual
+                                                                     assignment.
+
+
+ Resolver at capacity                                                Do not use for automatic assignment when capacity is a hard constraint.
+                                                                     Permit authorized manual override with warning and audit record.
+
+
+ Outside shift                                                       Exclude from normal assignment unless configured as on-call/emergency
+                                                                     coverage.
+
+
+ Team mismatch                                                       Do not assign across team boundaries. Normalize legacy labels or route to
+                                                                     the correct operational team.
+
+
+ SLA calculation inconsistency                                       Treat the authoritative SLA service as the source of truth; do not duplicate
+                                                                     SLA mathematics in UI code.
+
+
+ AI recommendation unavailable                                       Continue using approved SOP/KB and resolver expertise; do not block
+                                                                     ticket execution.
+
+
+
+
+7.2 Key Operational Metrics
+ Metric                                    Definition                                          Use
+
+
+ First-response SLA compliance             Percentage of tickets receiving first response      Identify service responsiveness issues.
+                                           within commitment.
+
+
+ Resolution SLA compliance                 Percentage resolved within commitment.              Measure operational delivery.
+
+
+ Unassigned age                            Elapsed time from creation to resolver              Identify queue and workforce bottlenecks.
+                                           assignment.
+
+
+ Resolver utilization                      Open/effective workload relative to configured      Manage workload concentration.
+                                           capacity.
+
+
+ Manual override rate                      Percentage of assignments made manually             Identify gaps in team taxonomy or workforce
+                                           rather than automatically.                          configuration.
+
+
+ Assignment quality                        Frequency of reassignment, SLA breach after         Tune routing weights and workforce policy.
+                                           assignment and skill-fit outcomes.
+
+
+ Knowledge reuse                           Resolved tickets referencing approved               Measure operational learning.
+                                           knowledge or similar cases.
+
+
+
+
+7.3 Continuous Improvement Cycle
+16. Review SLA breaches, assignment skips, reassignments and escalations weekly.
+17. Identify patterns in failed routing, missing skills or workload concentration.
+18. Update team taxonomy, workforce settings, SOP content or knowledge articles as appropriate.
+19. Test routing and SLA changes against representative tickets before production rollout.
+20. Record approved changes in the document-control mechanism and communicate them to affected teams.
+
+
+                                      SOP-ESOPS-001 | Version 1.0 | Internal Use | Page 8
+

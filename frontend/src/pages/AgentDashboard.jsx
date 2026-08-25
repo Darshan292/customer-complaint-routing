@@ -60,6 +60,7 @@ export default function AgentDashboard() {
     events: [],
     resolutionRecommendation: null,
     similarTickets: [],
+    resolutionContext: null,
   });
   const [aiLoading, setAiLoading] = useState(false);
   const [similarLoading, setSimilarLoading] = useState(false);
@@ -184,6 +185,7 @@ export default function AgentDashboard() {
         events: eventsResponse.data || [],
         resolutionRecommendation: null,
         similarTickets: similarResponse.data?.tickets || [],
+        resolutionContext: null,
       });
     } catch (err) {
       notify(
@@ -341,6 +343,32 @@ export default function AgentDashboard() {
       );
     } finally {
       setAiLoading(false);
+    }
+  };
+
+  const loadResolutionContext = async (ticketId) => {
+    try {
+      const response = await API.get(
+        `/tickets/${ticketId}/resolution-context`
+      );
+
+      setDetail((current) => ({
+        ...current,
+        resolutionContext: response.data || null,
+      }));
+
+      notify(
+        "success",
+        "Resolution context ready",
+        "Historical tickets, controlled SOP guidance and KB evidence were retrieved."
+      );
+    } catch (err) {
+      notify(
+        "error",
+        "Resolution context unavailable",
+        err.response?.data?.detail ||
+          "Unable to retrieve ticket, SOP and KB context."
+      );
     }
   };
 
@@ -608,10 +636,12 @@ export default function AgentDashboard() {
           onEscalate={escalate}
           resolutionRecommendation={detail.resolutionRecommendation}
           similarTickets={detail.similarTickets}
+          resolutionContext={detail.resolutionContext}
           aiLoading={aiLoading}
           similarLoading={similarLoading}
           onLoadResolutionRecommendation={loadResolutionRecommendation}
           onLoadSimilarTickets={loadSimilarTickets}
+          onLoadResolutionContext={loadResolutionContext}
         />
       )}
     </div>
