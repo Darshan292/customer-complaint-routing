@@ -54,7 +54,6 @@ def get_agent_tickets(
     agent_id: int,
     db: Session = Depends(get_db),
 ):
-
     agent = (
         db.query(Agent)
         .filter(
@@ -66,24 +65,54 @@ def get_agent_tickets(
 
     if not agent:
         raise HTTPException(
-            404,
-            "Agent not found",
+            status_code=404,
+            detail="Agent not found",
         )
+
+    # ----------------------------------------------------------
+    # IMPORTANT:
+    # Return ALL tickets historically assigned to this resolver.
+    #
+    # We separate ACTIVE from HISTORICAL tickets so that:
+    # - UI can show resolver history
+    # - workforce/capacity still uses active tickets only
+    # ----------------------------------------------------------
 
     tickets = (
         db.query(Complaint)
         .filter(
-            Complaint.assigned_agent_id
-            == agent_id,
-            Complaint.status.notin_(
-                [
-                    "RESOLVED",
-                    "CLOSED",
-                ]
-            ),
+            Complaint.assigned_agent_id == agent_id,
+        )
+        .order_by(
+            Complaint.created_at.desc()
         )
         .all()
     )
+
+    active_statuses = {
+        "OPEN",
+        "IN_PROGRESS",
+        "PENDING_CUSTOMER",
+    }
+
+    active_tickets = [
+        ticket
+        for ticket in tickets
+        if ticket.status in active_statuses
+    ]
+
+    historical_tickets = [
+        ticket
+        for ticket in tickets
+        if ticket.status in {
+            "RESOLVED",
+            "CLOSED",
+        }
+    ]
+
+    # ----------------------------------------------------------
+    # Enrich all tickets with SLA information.
+    # ----------------------------------------------------------
 
     enriched = []
 
@@ -127,8 +156,28 @@ def get_agent_tickets(
             }
         )
 
-    enriched.sort(
-        key=lambda item: (
+    # ----------------------------------------------------------
+    # Active tickets first.
+    # Historical tickets afterward.
+    # ----------------------------------------------------------
+
+    priority_order = {
+        "Critical": 4,
+        "High": 3,
+        "Medium": 2,
+        "Low": 1,
+    }
+
+    def sort_key(item):
+
+        ticket = item["ticket"]
+
+        is_active = (
+            ticket.status in active_statuses
+        )
+
+        return (
+            0 if is_active else 1,
             {
                 "BREACHED": 0,
                 "AT_RISK": 1,
@@ -138,13 +187,27 @@ def get_agent_tickets(
                 item["sla_state"],
                 4,
             ),
-            -PriorityService.LEVEL_SCORE.get(
-                item["ticket"].priority_level,
+            -priority_order.get(
+                ticket.priority_level,
                 0,
             ),
-            item["ticket"].created_at,
+            ticket.created_at,
         )
+
+    enriched.sort(
+        key=sort_key
     )
+
+    # ----------------------------------------------------------
+    # Workforce metrics MUST ONLY use active tickets.
+    # ----------------------------------------------------------
+
+    active_enriched = [
+        item
+        for item in enriched
+        if item["ticket"].status
+        in active_statuses
+    ]
 
     return {
         "agent": {
@@ -169,31 +232,63 @@ def get_agent_tickets(
         },
 
         "summary": {
+            # --------------------------------------------------
+            # ACTIVE WORKLOAD
+            # --------------------------------------------------
+
             "active_tickets": len(
-                tickets
+                active_tickets
             ),
 
             "critical": sum(
                 ticket.priority_level
                 == "Critical"
-                for ticket in tickets
+                for ticket in active_tickets
             ),
 
             "high": sum(
                 ticket.priority_level
                 == "High"
-                for ticket in tickets
+                for ticket in active_tickets
             ),
 
             "sla_breached": sum(
                 item["sla_breached"]
-                for item in enriched
+                for item in active_enriched
             ),
 
             "sla_at_risk": sum(
                 item["sla_at_risk"]
-                for item in enriched
+                for item in active_enriched
             ),
+
+            # --------------------------------------------------
+            # HISTORICAL WORK
+            # --------------------------------------------------
+
+            "resolved_tickets": sum(
+                ticket.status
+                == "RESOLVED"
+                for ticket in historical_tickets
+            ),
+
+            "closed_tickets": sum(
+                ticket.status
+                == "CLOSED"
+                for ticket in historical_tickets
+            ),
+
+            "historical_tickets": len(
+                historical_tickets
+            ),
+
+            "total_assigned_tickets": len(
+                tickets
+            ),
+
+            # --------------------------------------------------
+            # WORKFORCE
+            # --------------------------------------------------
 
             "capacity": (
                 agent.max_concurrent_tickets
@@ -201,7 +296,7 @@ def get_agent_tickets(
             ),
 
             "utilization": (
-                len(tickets)
+                len(active_tickets)
                 / max(
                     agent.max_concurrent_tickets
                     or agent.capacity
@@ -211,37 +306,32 @@ def get_agent_tickets(
             ),
         },
 
+        # ------------------------------------------------------
+        # ALL assigned tickets
+        # ------------------------------------------------------
+
         "tickets": [
-            {
-                **{
-                    key: value
-                    for key, value
-                    in item["ticket"].__dict__.items()
-                    if not key.startswith("_")
-                },
-
-                "sla_state": (
-                    item["sla_state"]
-                ),
-
-                "sla_breached": (
-                    item["sla_breached"]
-                ),
-
-                "sla_at_risk": (
-                    item["sla_at_risk"]
-                ),
-
-                "remaining_seconds": (
-                    item["remaining_seconds"]
-                ),
-
-                "remaining_hours": (
-                    item["remaining_hours"]
-                ),
-            }
+            item["ticket"]
             for item in enriched
+        ],
 
+        # ------------------------------------------------------
+        # Explicit subsets for frontend consumers
+        # ------------------------------------------------------
+
+        "active_tickets": [
+            item["ticket"]
+            for item in active_enriched
+        ],
+
+        "historical_tickets": [
+            item["ticket"]
+            for item in enriched
+            if item["ticket"].status
+            in {
+                "RESOLVED",
+                "CLOSED",
+            }
         ],
     }
 

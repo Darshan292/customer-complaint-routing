@@ -52,6 +52,9 @@ export default function AgentDashboard() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [tickets, setTickets] = useState([]);
+  const [activeTickets, setActiveTickets] = useState([]);
+  const [historicalTickets, setHistoricalTickets] = useState([]);
+  const [summary, setSummary] = useState({});
   const [profile, setProfile] = useState(null);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [detail, setDetail] = useState({
@@ -94,10 +97,24 @@ export default function AgentDashboard() {
         API.get("/agents"),
       ]);
 
-      setTickets(ticketResponse.data.tickets || []);
+      const allTickets =
+        ticketResponse.data.tickets || [];
+
+      setTickets(allTickets);
+
+      setActiveTickets(
+        ticketResponse.data.active_tickets ||
+        []
+      );
+
+      setHistoricalTickets(
+        ticketResponse.data.historical_tickets ||
+        []
+      );
       setProfile(
         agentResponse.data.find((agent) => agent.id === user.id) || null
       );
+      setSummary(ticketResponse.data.summary || {});
     } catch (err) {
       console.error(err);
       notify(
@@ -114,21 +131,18 @@ export default function AgentDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const activeCount = tickets.filter(
-    (ticket) => !["RESOLVED", "CLOSED"].includes(ticket.status)
-  ).length;
+  const activeCount =
+    summary.active_tickets ?? 0;
 
-  const breachedCount = tickets.filter(
-    (ticket) => slaState(ticket) === "BREACHED"
-  ).length;
+  const resolvedCount =
+    (summary.resolved_tickets ?? 0) +
+    (summary.closed_tickets ?? 0);
 
-  const atRiskCount = tickets.filter(
-    (ticket) => ticket.sla_at_risk === true || slaState(ticket) === "AT_RISK"
-  ).length;
+  const breachedCount =
+    summary.sla_breached ?? 0;
 
-  const resolvedCount = tickets.filter((ticket) =>
-    ["RESOLVED", "CLOSED"].includes(ticket.status)
-  ).length;
+  const atRiskCount =
+    summary.sla_at_risk ?? 0;
 
   const visibleTickets = useMemo(() => {
     const q = search.trim().toLowerCase();
