@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://customer-complaint-routing.onrender.com/",
+  baseURL: "https://customer-complaint-routing.onrender.com/api",
 });
 
 API.interceptors.request.use((config) => {
