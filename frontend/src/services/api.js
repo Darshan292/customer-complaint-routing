@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://organic-space-engine-4pjj6wqjjvq39v-8000.app.github.dev/api" || import.meta.env.VITE_API_URL ,
+  baseURL: "https://organic-space-engine-4pjj6wqjjvq39v-8000.app.github.dev/api" ,
 });
 
 API.interceptors.request.use((config) => {
