@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api",
+  baseURL: "https://turbo-giggle-4pjj6wqjgj7cqwj5-8000.app.github.dev/api" || import.meta.env.VITE_API_URL ,
 });
 
 API.interceptors.request.use((config) => {
