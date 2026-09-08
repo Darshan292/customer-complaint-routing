@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     #WD_DEFAULT_USERNAME: str = ""
     #WD_DEFAULT_PASSWORD: str = ""
     WD_DEFAULT_ENDPOINT:str = "https://impl-services1.wd12.myworkday.com/ccx/service/tcs_dpt2/Integrations/v47.0"             
-    WD_DEFAULT_USERNAME:str  = "UYoga@tcs_dpt2"
+    WD_DEFAULT_USERNAME:str  = "uyoga@tcs_dpt2"
     WD_DEFAULT_PASSWORD:str  = "Workday@12345"
 
     WD_COST_CENTER_INTEGRATION_ID: str = "InboundEIBCreateCostCenter"

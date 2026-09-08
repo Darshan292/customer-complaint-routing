@@ -1,0 +1,28 @@
+<soapenv:Envelope xmlns:bsvc="urn:com.workday/bsvc" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    <soapenv:Header>
+        <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+            <wsse:UsernameToken>
+                <wsse:Username>ISU_TOOLS_STUDIO@tenantid</wsse:Username>
+                <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">Password</wsse:Password>
+            </wsse:UsernameToken>
+        </wsse:Security>
+    </soapenv:Header>
+    <soapenv:Body>
+        <wd:Launch_EIB_Request xmlns:wd="urn:com.workday/bsvc" wd:version="v47.0">
+            <wd:Integration_System_Reference>
+                <wd:ID wd:type="Integration_System_ID">INTXXX_Put_Location</wd:ID>
+            </wd:Integration_System_Reference>
+            <wd:Service_Component_Data>
+                <wd:Data_Source>true</wd:Data_Source>
+                <wd:Field_Override_Data>
+                    <wd:Field_Name>Integration Attachment</wd:Field_Name>
+                    <wd:Attachment_Data wd:Content_Type="text/xml;charset=UTF-8" wd:Filename="PutLocations.xml" wd:Encoding="base64" wd:Compressed="true">
+                        <wd:File_ID>Filename3.xlsx</wd:File_ID>
+                        <wd:File_Content></wd:File_Content>
+                        <wd:Comments>string</wd:Comments>
+                    </wd:Attachment_Data>
+                </wd:Field_Override_Data>
+            </wd:Service_Component_Data>
+        </wd:Launch_EIB_Request>
+    </soapenv:Body>
+</soapenv:Envelope>

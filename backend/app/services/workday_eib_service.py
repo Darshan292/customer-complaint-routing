@@ -70,62 +70,40 @@ class WorkdayEIBService:
             )
         )
 
-        soap = f"""<?xml version="1.0" encoding="utf-8"?>
-<soapenv:Envelope
-    xmlns:bsvc="urn:com.workday/bsvc"
-    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    xmlns:wsse="{cls.WSSE_NAMESPACE}"
-    xmlns:wsu="{cls.WSU_NAMESPACE}">
-
+        soap = f"""<soapenv:Envelope xmlns:bsvc="urn:com.workday/bsvc" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
     <soapenv:Header>
-        <wsse:Security soapenv:mustUnderstand="1">
+        <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
             <wsse:UsernameToken>
-                <wsse:Username>{safe_username}</wsse:Username>
-                <wsse:Password
-                    Type="{cls.PASSWORD_TEXT_TYPE}">{safe_password}</wsse:Password>
+                <wsse:Username>uyoga@tcs_dpt2</wsse:Username>
+                <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">Workday@12345</wsse:Password>
             </wsse:UsernameToken>
         </wsse:Security>
     </soapenv:Header>
-
     <soapenv:Body>
-        <bsvc:Launch_EIB_Request wd:version="v47.0">
-
-            <bsvc:Integration_System_Reference>
-                <bsvc:ID wd:type="Integration_System_ID">
-                    {safe_integration_id}
-                </bsvc:ID>
-            </bsvc:Integration_System_Reference>
-
-            <bsvc:Service_Component_Data>
-
-                <bsvc:Field_Override_Data>
-                    <bsvc:Field_Name>
-                        Integration Attachment
-                    </bsvc:Field_Name>
-
-                    <bsvc:Attachment_Data
-                        wd:Content_Type="{safe_content_type}"
-                        wd:Filename="{safe_filename}">
-
-                        <bsvc:File_Content>
-                            {base64_content}
-                        </bsvc:File_Content>
-
-                        <bsvc:Comments>
-                            Uploaded from Customer Complaint Operations Platform
-                        </bsvc:Comments>
-
-                    </bsvc:Attachment_Data>
-                </bsvc:Field_Override_Data>
-
-            </bsvc:Service_Component_Data>
-
-        </bsvc:Launch_EIB_Request>
+        <wd:Launch_EIB_Request xmlns:wd="urn:com.workday/bsvc" wd:version="v47.0">
+            <wd:Integration_System_Reference>
+                <wd:ID wd:type="Integration_System_ID">InboundEIBCreateCostCenter</wd:ID>
+            </wd:Integration_System_Reference>
+            <wd:Service_Component_Data>
+                <wd:Data_Source>true</wd:Data_Source>
+                <wd:Field_Override_Data>
+                    <wd:Field_Name>Integration Attachment</wd:Field_Name>
+                    <wd:Attachment_Data wd:Content_Type="text/xml;charset=UTF-8" wd:Filename={filename} wd:Encoding="base64" wd:Compressed="true">
+                        <wd:File_ID>{filename}</wd:File_ID>
+                        <wd:File_Content>
+                        {base64_content}
+                        </wd:File_Content>
+                        <wd:Comments>string</wd:Comments>
+                    </wd:Attachment_Data>
+                </wd:Field_Override_Data>
+            </wd:Service_Component_Data>
+        </wd:Launch_EIB_Request>
     </soapenv:Body>
-
 </soapenv:Envelope>
 """
+
+        print("Soap is =======")
+        print()
 
         return soap
 
