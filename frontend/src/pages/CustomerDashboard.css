@@ -710,3 +710,8 @@
   .customer-intake-card h2{font-size:27px}
   .customer-list-header h2{font-size:26px}
 }
+
+.customer-attachment-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:14px 0; }
+.customer-attachment-row label { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+.customer-attachment-row input { max-width:100%; }
+.customer-attachment-row span { font-size:12px; opacity:.75; }

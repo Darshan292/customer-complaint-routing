@@ -94,6 +94,7 @@ export default function TicketDetailModal({
   onLoadResolutionRecommendation,
   onLoadSimilarTickets,
   onLoadResolutionContext,
+  onLaunchCostCenterEib,
 }) {
   const [manualAgentId, setManualAgentId] = useState("");
   const [manualConfirm, setManualConfirm] = useState(false);
@@ -296,6 +297,22 @@ export default function TicketDetailModal({
               </div>
               {selectedManualAgent && <div className={`td-override ${atCapacity ? "danger" : "safe"}`}><strong>{atCapacity ? "Capacity override required" : "Resolver is within capacity"}</strong><span>{selectedManualAgent.name}: {selectedManualAgent.open_tickets ?? 0} active / {selectedManualAgent.max_concurrent_tickets ?? selectedManualAgent.capacity ?? "—"} capacity. {atCapacity ? "Manual assignment will exceed normal capacity." : "No capacity override is required."}</span></div>}
               {!manualAgents.length && <div className="td-empty small"><FiUser /><span>No active resolver is currently mapped to {operationalTeam}.</span></div>}
+            </section>
+          )}
+
+          {mode === "agent" && ticket.request_type === "WORKDAY_COST_CENTER_EIB" && (
+            <section className="td-card eib-launch-card">
+              <div className="td-section-heading">
+                <div>
+                  <div className="td-card-label"><FiZap /> WORKDAY EIB</div>
+                  <h3>Cost Center EIB launch</h3>
+                </div>
+                <StateBadge tone="info">DIRECT LAUNCH</StateBadge>
+              </div>
+              <p className="td-muted">You can launch the uploaded Cost Center EIB template directly in Workday. The uploaded file is sent as-is; no mapping or transformation is performed.</p>
+              <div className="td-action-row">
+                <button className="td-primary" disabled={loading} onClick={() => onLaunchCostCenterEib?.(ticket.id)}><FiZap /> {loading ? "Launching..." : "Launch Cost Center EIB"}</button>
+              </div>
             </section>
           )}
 

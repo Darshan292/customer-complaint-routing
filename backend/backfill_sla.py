@@ -2,9 +2,6 @@ from datetime import datetime
 
 from app.database.db import SessionLocal
 
-# IMPORTANT:
-# Import all models that participate in foreign keys
-# before SQLAlchemy performs a flush/commit.
 from app.models.agent import Agent
 from app.models.complaint import Complaint
 from app.models.team import Team

@@ -7,6 +7,7 @@ from app.models.agent import Agent
 from app.models.team import Team
 from app.models.ticket_event import TicketEvent
 from app.models.notification import Notification
+from app.models.ticket_attachment import TicketAttachment
 from app.routers.ticket_router import router as ticket_router
 from app.routers.analysis_router import router as analysis_router
 from app.routers.auth_router import router as auth_router
@@ -16,6 +17,13 @@ from app.routers.retrieval_router import router as retrieval_router
 
 app = FastAPI(title="Enterprise Complaint Operations Platform", version="2.0.0")
 Base.metadata.create_all(bind=engine)
+
+# Lightweight migration for the temporary integration marker.
+# create_all() does not add columns to an existing SQLite table.
+with engine.begin() as connection:
+    columns = {row[1] for row in connection.exec_driver_sql("PRAGMA table_info(complaints)").fetchall()}
+    if "request_type" not in columns:
+        connection.exec_driver_sql("ALTER TABLE complaints ADD COLUMN request_type VARCHAR")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

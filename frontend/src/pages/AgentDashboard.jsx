@@ -238,6 +238,20 @@ export default function AgentDashboard() {
     }
   };
 
+  const launchCostCenterEib = async (id) => {
+    setBusy(true);
+    try {
+      const response = await API.post(`/tickets/${id}/launch-cost-center-eib`);
+      notify("success", `Ticket #${id}: EIB launched`, response.data?.message || "Workday accepted the EIB launch request.");
+      await load();
+      await refreshSelected();
+    } catch (err) {
+      notify("error", `Ticket #${id}: EIB launch failed`, err.response?.data?.detail || "Workday rejected the EIB launch request.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const updateStatus = async (id, status) => {
     setBusy(true);
 
@@ -656,6 +670,7 @@ export default function AgentDashboard() {
           onLoadResolutionRecommendation={loadResolutionRecommendation}
           onLoadSimilarTickets={loadSimilarTickets}
           onLoadResolutionContext={loadResolutionContext}
+          onLaunchCostCenterEib={launchCostCenterEib}
         />
       )}
     </div>

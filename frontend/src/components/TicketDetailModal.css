@@ -1064,3 +1064,7 @@
   .resolution-context-modal { width: 100%; max-height: 95vh; }
   .resolution-context-body { max-height: calc(95vh - 120px); }
 }
+
+.eib-launch-card { border: 1px solid rgba(75, 125, 255, .22); }
+.eib-launch-card .td-action-row { display:flex; gap:10px; flex-wrap:wrap; }
+.eib-launch-card a { text-decoration:none; display:inline-flex; align-items:center; }

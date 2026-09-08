@@ -2101,3 +2101,111 @@ def run_sla_monitor(
         "escalated": escalated,
         "results": results,
     }
+@router.post("/tickets/{ticket_id}/launch-cost-center-eib")
+def launch_cost_center_eib(
+    ticket_id: int,
+    x_user_id: str | None = Header(None),
+    x_user_role: str | None = Header(None),
+    db: Session = Depends(get_db),
+):
+    from app.models.ticket_attachment import TicketAttachment
+    from app.services.workday_eib_service import WorkdayEIBService
+
+    print(f"[EIB DEBUG 01] Launch endpoint entered | ticket_id={ticket_id}", flush=True)
+    print(f"[EIB DEBUG 02] Request headers received | user_id={x_user_id} | role={x_user_role}", flush=True)
+
+    ticket = db.query(Complaint).filter(Complaint.id == ticket_id).first()
+    print(f"[EIB DEBUG 03] Ticket lookup complete | found={ticket is not None}", flush=True)
+    if not ticket:
+        print("[EIB DEBUG ERROR] Ticket not found", flush=True)
+        raise HTTPException(404, "Ticket not found")
+
+    print(
+        f"[EIB DEBUG 04] Ticket details | request_type={ticket.request_type} | "
+        f"assigned_agent_id={ticket.assigned_agent_id} | status={getattr(ticket, 'status', None)}",
+        flush=True,
+    )
+
+    if ticket.request_type != "WORKDAY_COST_CENTER_EIB":
+        print("[EIB DEBUG ERROR] Ticket is not a Cost Center EIB request", flush=True)
+        raise HTTPException(400, "This ticket is not a Cost Center EIB request.")
+    print("[EIB DEBUG 05] Cost Center EIB workflow check passed", flush=True)
+
+    try:
+        current_user_id = int(x_user_id or 0)
+    except ValueError:
+        current_user_id = 0
+    print(f"[EIB DEBUG 06] Current user parsed | current_user_id={current_user_id}", flush=True)
+
+    if current_user_id != ticket.assigned_agent_id or (x_user_role or "").lower() != "agent":
+        print("[EIB DEBUG ERROR] Resolver authorization failed", flush=True)
+        raise HTTPException(403, "Only the assigned resolver can launch this EIB.")
+    print("[EIB DEBUG 07] Resolver authorization passed", flush=True)
+
+    print(
+        f"[EIB DEBUG 08] Configured EIB resolver check | configured_agent_id={settings.WD_COST_CENTER_AGENT_ID}",
+        flush=True,
+    )
+    if ticket.assigned_agent_id != settings.WD_COST_CENTER_AGENT_ID:
+        print("[EIB DEBUG ERROR] Ticket is not assigned to configured EIB resolver", flush=True)
+        raise HTTPException(403, "This EIB workflow is restricted to the configured resolver.")
+    print("[EIB DEBUG 09] Configured resolver check passed", flush=True)
+
+    print("[EIB DEBUG 10] Looking up ticket attachment", flush=True)
+    attachment = (
+        db.query(TicketAttachment)
+        .filter(TicketAttachment.ticket_id == ticket_id)
+        .first()
+    )
+    print(f"[EIB DEBUG 11] Attachment lookup complete | found={attachment is not None}", flush=True)
+    if not attachment:
+        print("[EIB DEBUG ERROR] No EIB attachment found", flush=True)
+        raise HTTPException(400, "No EIB attachment is available for this ticket.")
+
+    print(
+        f"[EIB DEBUG 12] Attachment loaded | filename={attachment.filename} | "
+        f"content_type={attachment.content_type} | size_bytes={len(attachment.content or b'')}",
+        flush=True,
+    )
+    print("[EIB DEBUG 13] Starting Workday EIB launch service", flush=True)
+
+    try:
+        result = WorkdayEIBService.launch(
+            file_content=attachment.content,
+            filename=attachment.filename,
+            content_type=attachment.content_type,
+            endpoint=settings.WD_DEFAULT_ENDPOINT,
+            username=settings.WD_DEFAULT_USERNAME,
+            password=settings.WD_DEFAULT_PASSWORD,
+            integration_system_id=settings.WD_COST_CENTER_INTEGRATION_ID,
+        )
+        print(
+            f"[EIB DEBUG 14] Workday EIB service returned | status={result.get('status')} | "
+            f"status_code={result.get('status_code')}",
+            flush=True,
+        )
+    except Exception as exc:
+        print(
+            f"[EIB DEBUG ERROR] Workday EIB launch failed | type={type(exc).__name__} | error={exc}",
+            flush=True,
+        )
+        raise HTTPException(502, detail=str(exc))
+
+    print("[EIB DEBUG 15] Creating audit event", flush=True)
+    db.add(TicketEvent(
+        ticket_id=ticket.id,
+        event_type="WORKDAY_EIB_LAUNCHED",
+        to_value=attachment.filename,
+        notes="Cost Center EIB launch request submitted to Workday.",
+    ))
+    print("[EIB DEBUG 16] Committing audit event to database", flush=True)
+    db.commit()
+    print("[EIB DEBUG 17] Database commit complete", flush=True)
+
+    print(f"[EIB DEBUG 18] Launch endpoint completed successfully | ticket_id={ticket_id}", flush=True)
+    return {
+        "ticket_id": ticket.id,
+        "status": "SUCCESS",
+        "message": result["message"],
+        "filename": attachment.filename,
+    }

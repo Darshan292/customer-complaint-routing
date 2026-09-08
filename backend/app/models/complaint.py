@@ -32,6 +32,9 @@ class Complaint(Base):
     assigned_agent_name = Column(String, nullable=True)
     queue = Column(String)
 
+    # Temporary integration workflow marker.
+    request_type = Column(String, nullable=True, index=True)
+
     status = Column(String, default="OPEN", index=True)
     escalation_required = Column(Boolean, default=False)
     # --------------------------------------------------

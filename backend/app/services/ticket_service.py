@@ -85,6 +85,7 @@ class TicketService:
             assigned_agent_name=assignment["agent"].name if assignment else None,
             assignment_score=assignment["score"] if assignment else None,
             assignment_explanation=assignment["explanation"] if assignment else "No active agent available in team.",
+            request_type=getattr(request, "request_type", None),
         )
         db.add(ticket)
         db.flush()

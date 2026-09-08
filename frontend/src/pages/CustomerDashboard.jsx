@@ -50,6 +50,7 @@ export default function CustomerDashboard() {
   const [tickets, setTickets] = useState([]);
   const [text, setText] = useState("");
   const [priority, setPriority] = useState("");
+  const [attachment, setAttachment] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [detail, setDetail] = useState({ sla: null, events: [] });
@@ -177,20 +178,23 @@ export default function CustomerDashboard() {
     setLoading(true);
 
     try {
+      const formData = new FormData();
+      formData.append("customer_name", user.name);
+      formData.append("customer_tier", user.customer_tier || "Gold");
+      formData.append("complaint_text", text);
+      if (priority) formData.append("priority", priority);
+      if (attachment) formData.append("attachment", attachment);
+
       const response = await API.post(
         "/tickets/analyze-and-create",
-        {
-          customer_name: user.name,
-          customer_tier: user.customer_tier || "Gold",
-          complaint_text: text,
-          priority: priority || null,
-        }
+        formData
       );
 
       const created = response.data;
 
       setText("");
       setPriority("");
+      setAttachment(null);
       await load();
 
       const ticketId = created.ticket_id || created.ticket?.id;
@@ -315,6 +319,17 @@ export default function CustomerDashboard() {
             onChange={(event) => setText(event.target.value)}
             placeholder="Describe what happened, who is affected, the business impact, and what outcome you need..."
           />
+
+          <div className="customer-attachment-row">
+            <label htmlFor="ticket-attachment">Attachment (optional)</label>
+            <input
+              id="ticket-attachment"
+              type="file"
+              accept=".xlsx,.xls,.csv,.pdf,.doc,.docx,.txt"
+              onChange={(event) => setAttachment(event.target.files?.[0] || null)}
+            />
+            {attachment && <span>{attachment.name}</span>}
+          </div>
 
           <div className="customer-intake-bottom">
             <div>
